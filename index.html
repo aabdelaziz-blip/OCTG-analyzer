@@ -449,7 +449,6 @@ function exportXL(){
   };
   var BDR = {style:'thin',color:{argb:'FF000000'}};
 
-  // Header
   var hdr = lastRes.cl.map(function(c){ return c.name; });
   var hrow = ws.addRow(hdr);
   hrow.height = 24;
@@ -460,15 +459,14 @@ function exportXL(){
     cell.border = {bottom:{style:'thin',color:{argb:'FF2E86DE'}}};
   });
 
-  // Data rows
   lastRes.cells.forEach(function(rc){
     var rowData = rc.map(function(c){ return c.lines.filter(Boolean).join('\n'); });
     var row = ws.addRow(rowData);
     row.height = 50;
     rc.forEach(function(cell,ci){
       var c = row.getCell(ci+1);
-      c.fill = FILLS[cell.cls] || FILLS.cn;
-      c.font = FONTS[cell.cls] || FONTS.cn;
+      c.fill = FILLS[cell.cls]||FILLS.cn;
+      c.font = FONTS[cell.cls]||FONTS.cn;
       c.alignment = {vertical:'middle',horizontal:'center',wrapText:true};
       c.border = {top:BDR,bottom:BDR,left:BDR,right:BDR};
     });
@@ -476,43 +474,37 @@ function exportXL(){
 
   lastRes.cl.forEach(function(_,i){ ws.getColumn(i+1).width = 22; });
 
-  // Universal export — works in browser AND Power BI
   wb.xlsx.writeBuffer().then(function(buf){
     var fname = 'OCTG_Analysis_' + new Date().toISOString().slice(0,10) + '.xlsx';
-    try {
-      // Convert to base64
-      var arr = new Uint8Array(buf);
-      var b64 = '';
-      var chunk = 8192;
-      for(var i=0; i<arr.length; i+=chunk){
-        b64 += String.fromCharCode.apply(null, arr.subarray(i, Math.min(i+chunk, arr.length)));
-      }
-      b64 = btoa(b64);
-      var uri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
-
-      // Method 1: Try direct download link
-      var a = document.createElement('a');
-      a.href = uri;
-      a.download = fname;
-      a.style.display = 'none';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-
-      // Method 2: Also open in new window as fallback (works in PBI)
-      setTimeout(function(){
-        try {
-          var w = window.open('', '_blank');
-          if(w){
-            w.document.write('<html><body><p>Your file is ready. <a href="' + uri + '" download="' + fname + '">Click here to download</a> if it did not start automatically.</p><script>window.location.href="' + uri + '";<\/script></body></html>');
-            w.document.close();
-          }
-        } catch(e2){ /* silently ignore */ }
-      }, 500);
-
-    } catch(e){
-      alert('Export error: ' + e.message);
+    var arr = new Uint8Array(buf);
+    var b64 = '';
+    var chunk = 8192;
+    for(var i=0; i<arr.length; i+=chunk){
+      b64 += String.fromCharCode.apply(null, arr.subarray(i, Math.min(i+chunk, arr.length)));
     }
+    b64 = btoa(b64);
+    var uri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
+
+    // Show a prominent download link panel — works everywhere including PBI Desktop
+    var panel = document.getElementById('dlpanel');
+    if(!panel){
+      panel = document.createElement('div');
+      panel.id = 'dlpanel';
+      panel.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#132238;border:1.5px solid #2e86de;border-radius:12px;padding:16px 24px;display:flex;align-items:center;gap:16px;z-index:9999;box-shadow:0 8px 32px rgba(0,0,0,0.5);font-family:DM Sans,sans-serif;';
+      document.body.appendChild(panel);
+    }
+    panel.innerHTML = '<span style="color:#7a90a8;font-size:13px;">Your file is ready —</span>'
+      + '<a href="' + uri + '" download="' + fname + '" style="color:#00f5c4;font-size:13px;font-weight:600;text-decoration:none;background:#003d30;padding:8px 16px;border-radius:8px;border:1px solid rgba(0,184,148,0.3);">⬇ Download ' + fname + '</a>'
+      + '<button onclick="document.getElementById(\'dlpanel\').remove()" style="background:none;border:none;color:#4a5f75;cursor:pointer;font-size:18px;padding:0 4px;">&#x2715;</button>';
+
+    // Also try direct auto-download for standalone browser
+    try {
+      var a = document.createElement('a');
+      a.href = uri; a.download = fname; a.style.display = 'none';
+      document.body.appendChild(a); a.click();
+      setTimeout(function(){ if(a.parentNode) a.parentNode.removeChild(a); }, 1000);
+    } catch(e){ /* PBI blocks this — user uses the panel link instead */ }
+
   }).catch(function(e){ alert('Export failed: ' + e.message); });
 }
 
