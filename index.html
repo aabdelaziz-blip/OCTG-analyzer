@@ -353,12 +353,32 @@ function smartSelect(conns, max){
   // Sort: CAL IV first, then CAL II, then others, deduplicate by name
   var order = {'CAL IV':0,'CAL II':1,'CAL I':2,'ASL 350':3,'N/A':4};
   var sorted = conns.slice().sort(function(a,b){
-    return (order[a.cal]||9) - (order[b.cal]||9);
+    var diff = (order[a.cal]||9) - (order[b.cal]||9);
+    if(diff !== 0) return diff;
+    // Secondary sort: prefer connections with larger OD range (more versatile)
+    var aRange = (a.odMax||0) - (a.odMin||0);
+    var bRange = (b.odMax||0) - (b.odMin||0);
+    return bRange - aRange;
   });
   // Deduplicate by name, take up to max
+  // But: if top result is CAL IV, try to fill remaining slots with other CAL IV connections
   var seen = {}, result = [];
+  // First pass: fill with highest CAL level matches
+  var topCal = sorted.length > 0 ? sorted[0].cal : null;
   for(var i=0; i<sorted.length && result.length<max; i++){
-    if(!seen[sorted[i].name]){ seen[sorted[i].name]=1; result.push(sorted[i]); }
+    if(!seen[sorted[i].name]){
+      // Only mix CAL levels if we have fewer than 1 result
+      if(result.length > 0 && sorted[i].cal !== topCal) break;
+      seen[sorted[i].name]=1;
+      result.push(sorted[i]);
+    }
+  }
+  // If we only got 1 and there are more of same CAL, that means max=1 was set correctly
+  // If we have space, fill with next best
+  if(result.length < max){
+    for(var i=0; i<sorted.length && result.length<max; i++){
+      if(!seen[sorted[i].name]){ seen[sorted[i].name]=1; result.push(sorted[i]); }
+    }
   }
   return result;
 }
@@ -464,34 +484,33 @@ function exportXL(){
 
   lastRes.cl.forEach(function(_,i){ ws.getColumn(i+1).width = 22; });
 
-  // Download — detects PBI iframe and uses base64 fallback
+  // Universal download — works in browser AND Power BI iframe
   wb.xlsx.writeBuffer().then(function(buf){
     var fname = 'OCTG_Analysis_' + new Date().toISOString().slice(0,10) + '.xlsx';
-    var inIframe = false;
-    try { inIframe = window.self !== window.top; } catch(e){ inIframe = true; }
-
-    if(!inIframe){
-      // Standalone browser — normal blob download
-      var blob = new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement('a');
-      a.href = url; a.download = fname; a.style.display = 'none';
-      document.body.appendChild(a); a.click();
-      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-    } else {
-      // Inside iframe (Power BI) — use base64 data URI
+    try {
+      // Convert buffer to base64
       var arr = new Uint8Array(buf);
       var b64 = '';
       var chunk = 8192;
       for(var i=0; i<arr.length; i+=chunk){
-        b64 += String.fromCharCode.apply(null, arr.subarray(i, i+chunk));
+        b64 += String.fromCharCode.apply(null, arr.subarray(i,Math.min(i+chunk,arr.length)));
       }
       b64 = btoa(b64);
       var uri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
       var a = document.createElement('a');
-      a.href = uri; a.download = fname; a.style.display = 'none';
-      document.body.appendChild(a); a.click();
-      setTimeout(function(){ document.body.removeChild(a); }, 1000);
+      a.setAttribute('href', uri);
+      a.setAttribute('download', fname);
+      a.style.position = 'fixed';
+      a.style.top = '0';
+      a.style.left = '0';
+      a.style.opacity = '0';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ 
+        if(a.parentNode) a.parentNode.removeChild(a); 
+      }, 2000);
+    } catch(e){
+      alert('Export error: ' + e.message + '\nTry opening the app directly in a browser tab.');
     }
   }).catch(function(e){ alert('Export failed: ' + e.message); });
 }
