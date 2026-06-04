@@ -5,200 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OCTG Competition Analyzer</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root {
-  --navy: #0d1b2e;
-  --navy-2: #132238;
-  --navy-3: #1a2f4a;
-  --navy-4: #213856;
-  --accent: #2e86de;
-  --accent-dim: #1a5fa8;
-  --green: #00b894;
-  --green-bg: #003d30;
-  --green-text: #00f5c4;
-  --yellow: #f9ca24;
-  --yellow-bg: #3d3000;
-  --yellow-text: #ffd700;
-  --red: #e55039;
-  --red-bg: #3d0a0a;
-  --red-text: #ff6b6b;
-  --text: #e8edf5;
-  --text-dim: #7a90a8;
-  --text-muted: #4a5f75;
-  --border: rgba(46,134,222,0.15);
-  --border-bright: rgba(46,134,222,0.35);
-  --radius: 8px;
-  --radius-lg: 12px;
+  --navy:#0d1b2e;--navy-2:#132238;--navy-3:#1a2f4a;--navy-4:#213856;
+  --accent:#2e86de;--accent-dim:#1a5fa8;
+  --green:#00b894;--green-bg:#003d30;--green-text:#00f5c4;
+  --yellow:#f9ca24;--yellow-bg:#3d3000;--yellow-text:#ffd700;
+  --red:#e55039;--red-bg:#3d0a0a;--red-text:#ff6b6b;
+  --text:#e8edf5;--text-dim:#7a90a8;--text-muted:#4a5f75;
+  --border:rgba(46,134,222,0.15);--border-bright:rgba(46,134,222,0.35);
+  --radius:8px;--radius-lg:12px;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 14px; }
-body {
-  background: var(--navy);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  min-height: 100vh;
-  padding: 0;
-}
-
-/* Header */
-.header {
-  background: var(--navy-2);
-  border-bottom: 1px solid var(--border);
-  padding: 18px 32px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-.header-icon {
-  width: 36px; height: 36px;
-  background: var(--accent);
-  border-radius: var(--radius);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px;
-}
-.header h1 { font-size: 16px; font-weight: 600; letter-spacing: 0.02em; }
-.header p { font-size: 12px; color: var(--text-dim); }
-.header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.badge { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; background: var(--navy-4); color: var(--accent); border: 1px solid var(--border-bright); font-family: 'DM Mono', monospace; }
-
-/* Main layout */
-.main { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 61px); }
-
-/* Sidebar */
-.sidebar {
-  background: var(--navy-2);
-  border-right: 1px solid var(--border);
-  padding: 24px 20px;
-  overflow-y: auto;
-}
-.section-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
-.comp-list { display: flex; flex-direction: column; gap: 4px; margin-bottom: 28px; }
-.comp-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px;
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background 0.15s;
-  border: 1px solid transparent;
-  user-select: none;
-}
-.comp-item:hover { background: var(--navy-3); }
-.comp-item.active { background: rgba(46,134,222,0.1); border-color: var(--border-bright); }
-.comp-item input { display: none; }
-.comp-check-box {
-  width: 16px; height: 16px;
-  border: 1.5px solid var(--text-muted);
-  border-radius: 4px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.15s;
-}
-.comp-item.active .comp-check-box {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.comp-check-box svg { display: none; }
-.comp-item.active .comp-check-box svg { display: block; }
-.comp-name { font-size: 13px; font-weight: 400; }
-.comp-item.active .comp-name { color: var(--accent); font-weight: 500; }
-.comp-region { font-size: 10px; color: var(--text-muted); margin-left: auto; font-family: 'DM Mono', monospace; }
-
-/* Legend */
-.legend { margin-top: 4px; }
-.leg-item { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; color: var(--text-dim); }
-.leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-
-/* Content area */
-.content { padding: 28px 32px; overflow-y: auto; }
-
-/* Requirements */
-.content-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-.content-header h2 { font-size: 15px; font-weight: 600; }
-.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); font-size: 13px; font-weight: 500; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: all 0.15s; }
-.btn-primary { background: var(--accent); color: #fff; }
-.btn-primary:hover { background: var(--accent-dim); }
-.btn-secondary { background: var(--navy-3); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--navy-4); }
-.btn-ghost { background: transparent; color: var(--text-dim); border: 1px solid var(--border); }
-.btn-ghost:hover { background: var(--navy-3); color: var(--text); }
-.btn-danger { background: transparent; color: var(--red); border: none; padding: 4px; }
-.btn-danger:hover { color: var(--red-text); }
-.btn-sm { padding: 5px 12px; font-size: 12px; }
-.btn-actions { display: flex; gap: 8px; align-items: center; margin-bottom: 24px; }
-
-/* Requirement rows */
-.req-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.req-row {
-  background: var(--navy-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 14px 16px;
-  display: grid;
-  grid-template-columns: 24px 1fr 1fr 1fr 1fr 1fr 32px;
-  gap: 10px;
-  align-items: end;
-  transition: border-color 0.15s;
-}
-.req-row:hover { border-color: var(--border-bright); }
-.row-num { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; padding-bottom: 8px; text-align: center; }
-.field { display: flex; flex-direction: column; gap: 5px; }
-.field label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); }
-.field select, .field input {
-  background: var(--navy-3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  color: var(--text);
-  font-size: 13px;
-  padding: 7px 10px;
-  font-family: 'DM Sans', sans-serif;
-  outline: none;
-  width: 100%;
-  transition: border-color 0.15s;
-  appearance: none;
-  -webkit-appearance: none;
-}
-.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a90a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; padding-right: 24px; }
-.field select:focus, .field input:focus { border-color: var(--accent); }
-.field select option { background: var(--navy-3); }
-.del-btn { padding: 6px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; align-self: end; margin-bottom: 1px; border-radius: var(--radius); transition: all 0.15s; }
-.del-btn:hover { color: var(--red); background: var(--red-bg); }
-.del-btn svg { display: block; }
-.empty-state { text-align: center; padding: 32px; color: var(--text-muted); font-size: 13px; background: var(--navy-2); border: 1px dashed var(--border); border-radius: var(--radius-lg); }
-
-/* Output table */
-.output-section { margin-top: 8px; }
-.output-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
-.output-header h3 { font-size: 14px; font-weight: 600; }
-.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); border: 1px solid var(--border); }
-table { border-collapse: collapse; width: 100%; min-width: 600px; }
-thead tr { background: var(--navy-3); }
-th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
-th:first-child { border-right: 1px solid var(--border); min-width: 160px; }
-td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 12px; line-height: 1.5; }
-tr:last-child td { border-bottom: none; }
-td:first-child { border-right: 1px solid var(--border); background: var(--navy-2); }
-.req-pill { display: inline-block; font-size: 11px; color: var(--text-dim); font-family: 'DM Mono', monospace; line-height: 1.6; }
-.cell-green { background: var(--green-bg); color: var(--green-text); }
-.cell-yellow { background: var(--yellow-bg); color: var(--yellow-text); }
-.cell-red { background: var(--red-bg); color: var(--red-text); }
-.cell-na { background: var(--navy-3); color: var(--text-muted); font-style: italic; }
-.conn-name { font-weight: 500; display: block; }
-.conn-note { font-size: 11px; opacity: 0.8; display: block; margin-top: 2px; }
-.no-comps { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{background:var(--navy);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh}
+.header{background:var(--navy-2);border-bottom:1px solid var(--border);padding:18px 32px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.header-icon{width:36px;height:36px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:18px}
+.header h1{font-size:16px;font-weight:600;letter-spacing:0.02em}
+.header p{font-size:12px;color:var(--text-dim)}
+.header-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;background:var(--navy-4);color:var(--accent);border:1px solid var(--border-bright);font-family:'DM Mono',monospace}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#888;display:inline-block;margin-right:4px}
+.status-dot.ok{background:var(--green)}
+.status-dot.err{background:var(--red)}
+.status-text{font-size:11px;color:var(--text-dim)}
+.main{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 61px)}
+.sidebar{background:var(--navy-2);border-right:1px solid var(--border);padding:24px 20px;overflow-y:auto}
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px}
+.comp-list{display:flex;flex-direction:column;gap:4px;margin-bottom:28px}
+.comp-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:var(--radius);cursor:pointer;transition:background 0.15s;border:1px solid transparent;user-select:none}
+.comp-item:hover{background:var(--navy-3)}
+.comp-item.active{background:rgba(46,134,222,0.1);border-color:var(--border-bright)}
+.comp-check-box{width:16px;height:16px;border:1.5px solid var(--text-muted);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.15s}
+.comp-item.active .comp-check-box{background:var(--accent);border-color:var(--accent)}
+.comp-check-box svg{display:none}
+.comp-item.active .comp-check-box svg{display:block}
+.comp-name{font-size:13px;font-weight:400}
+.comp-item.active .comp-name{color:var(--accent);font-weight:500}
+.comp-region{font-size:10px;color:var(--text-muted);margin-left:auto;font-family:'DM Mono',monospace}
+.legend{margin-top:4px}
+.leg-item{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--text-dim)}
+.leg-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.content{padding:28px 32px;overflow-y:auto}
+.content-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.content-header h2{font-size:15px;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all 0.15s}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent-dim)}
+.btn-secondary{background:var(--navy-3);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--navy-4)}
+.btn-ghost{background:transparent;color:var(--text-dim);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--navy-3);color:var(--text)}
+.btn-export{background:var(--green-bg);color:var(--green-text);border:1px solid rgba(0,184,148,0.3)}
+.btn-export:hover{background:rgba(0,61,48,0.8)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-actions{display:flex;gap:8px;align-items:center;margin-bottom:24px;flex-wrap:wrap}
+.req-container{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.req-row{background:var(--navy-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px;display:grid;grid-template-columns:24px 1fr 1fr 1fr 1fr 1fr 32px;gap:10px;align-items:end;transition:border-color 0.15s}
+.req-row:hover{border-color:var(--border-bright)}
+.row-num{font-size:11px;color:var(--text-muted);font-family:'DM Mono',monospace;padding-bottom:8px;text-align:center}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted)}
+.field select,.field input{background:var(--navy-3);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:13px;padding:7px 10px;font-family:'DM Sans',sans-serif;outline:none;width:100%;transition:border-color 0.15s;appearance:none;-webkit-appearance:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a90a8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:24px}
+.field select:focus,.field input:focus{border-color:var(--accent)}
+.field select option{background:var(--navy-3)}
+.del-btn{padding:6px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;align-self:end;margin-bottom:1px;border-radius:var(--radius);transition:all 0.15s}
+.del-btn:hover{color:var(--red);background:var(--red-bg)}
+.del-btn svg{display:block}
+.empty-state{text-align:center;padding:32px;color:var(--text-muted);font-size:13px;background:var(--navy-2);border:1px dashed var(--border);border-radius:var(--radius-lg)}
+.output-section{margin-top:8px}
+.output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.output-header h3{font-size:14px;font-weight:600}
+.output-actions{display:flex;gap:8px}
+.table-wrap{overflow-x:auto;border-radius:var(--radius-lg);border:1px solid var(--border)}
+table{border-collapse:collapse;width:100%;min-width:600px}
+thead tr{background:var(--navy-3)}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-muted);border-bottom:1px solid var(--border);white-space:nowrap}
+th:first-child{border-right:1px solid var(--border);min-width:160px}
+td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px;line-height:1.5}
+tr:last-child td{border-bottom:none}
+td:first-child{border-right:1px solid var(--border);background:var(--navy-2)}
+.req-pill{display:inline-block;font-size:11px;color:var(--text-dim);font-family:'DM Mono',monospace;line-height:1.6}
+.cell-green{background:var(--green-bg);color:var(--green-text)}
+.cell-yellow{background:var(--yellow-bg);color:var(--yellow-text)}
+.cell-red{background:var(--red-bg);color:var(--red-text)}
+.cell-na{background:var(--navy-3);color:var(--text-muted);font-style:italic}
+.conn-name{font-weight:500;display:block}
+.conn-note{font-size:11px;opacity:0.8;display:block;margin-top:2px}
+.loading{text-align:center;padding:40px;color:var(--text-muted);font-size:13px}
 </style>
 </head>
 <body>
-
 <div class="header">
   <div class="header-icon">⚙</div>
   <div>
@@ -206,33 +105,29 @@ td:first-child { border-right: 1px solid var(--border); background: var(--navy-2
     <p>Premium connection competitive analysis tool</p>
   </div>
   <div class="header-right">
-    <span class="badge">v1.0</span>
+    <span><span class="status-dot" id="statusDot"></span><span class="status-text" id="statusText">Loading data...</span></span>
+    <span class="badge" id="versionBadge">v2.0</span>
   </div>
 </div>
 
 <div class="main">
   <aside class="sidebar">
     <div class="section-label">Competitors</div>
-    <div class="comp-list" id="compList"></div>
-
+    <div class="comp-list" id="compList"><div class="loading">Loading...</div></div>
     <div class="section-label">Legend</div>
     <div class="legend">
       <div class="leg-item"><div class="leg-dot" style="background:var(--green)"></div>All parameters match</div>
-      <div class="leg-item"><div class="leg-dot" style="background:var(--yellow)"></div>Minor issue (CAL, drift)</div>
+      <div class="leg-item"><div class="leg-dot" style="background:var(--yellow)"></div>Minor issue (CAL level)</div>
       <div class="leg-item"><div class="leg-dot" style="background:var(--red)"></div>Critical mismatch</div>
-      <div class="leg-item"><div class="leg-dot" style="background:#2a3a4a"></div>No data available</div>
+      <div class="leg-item"><div class="leg-dot" style="background:#2a3a4a"></div>No data</div>
     </div>
   </aside>
 
   <main class="content">
-    <div class="content-header">
-      <h2>Requirements</h2>
-    </div>
-
+    <div class="content-header"><h2>Requirements</h2></div>
     <div class="req-container" id="reqContainer">
       <div class="empty-state" id="emptyState">No requirements added yet. Click "Add requirement" to start.</div>
     </div>
-
     <div class="btn-actions">
       <button class="btn btn-secondary" onclick="addRow()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -248,33 +143,30 @@ td:first-child { border-right: 1px solid var(--border); background: var(--navy-2
     <div class="output-section" id="outputSection" style="display:none">
       <div class="output-header">
         <h3>Analysis results</h3>
-        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('outputSection').style.display='none'">Dismiss</button>
+        <div class="output-actions">
+          <button class="btn btn-export btn-sm" onclick="exportExcel()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export to Excel
+          </button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('outputSection').style.display='none'">Dismiss</button>
+        </div>
       </div>
-      <div class="table-wrap">
-        <table id="outputTable"></table>
-      </div>
+      <div class="table-wrap"><table id="outputTable"></table></div>
     </div>
   </main>
 </div>
 
 <script>
-const COMPETITORS = [
-  {id:'tpco',name:'TPCO',region:'CN'},
-  {id:'baosteel',name:'Baosteel',region:'CN'},
-  {id:'hengyang',name:'Hengyang',region:'CN'},
-  {id:'changbao',name:'Changbao',region:'CN'},
-  {id:'molong',name:'Shandong Molong',region:'CN'},
-  {id:'vallourec',name:'Vallourec',region:'FR'},
-  {id:'jfe',name:'JFE',region:'JP'},
-  {id:'nippon',name:'Nippon Steel',region:'JP'},
-  {id:'hunting',name:'Hunting',region:'UK'},
-  {id:'voestalpine',name:'Voestalpine',region:'AT'},
-];
+// ── DATA LOADING ─────────────────────────────────────────────────────────
+let DB = {};
+let COMPETITORS_LIST = [];
+let selected = new Set();
+let rowCount = 0;
+let lastResults = [];
 
 const OD_SIZES = ['1.9','2 3/8','2 7/8','3 1/2','4','4 1/2','5','5 1/2','6 5/8','7','7 5/8','7 3/4','8 5/8','9 5/8','10 3/4','11 3/4','13 3/8','14','16','18 5/8','20','24','26'];
-const GRADES = ['J55','K55','N80','L80-1','L80-9Cr','L80-13Cr','C90','T95','C95','P110','Q125','V140','V150','13Cr','Super 13Cr','HP13Cr','15Cr','17Cr','22Cr Duplex','25Cr Super Duplex'];
-const END_TYPES = ['T&C','Integral Flush','Semi-Flush','Integral Upset','Riser'];
 const CAL_LEVELS = ['CAL IV','CAL II','N/A'];
+const END_TYPES = ['T&C','Integral Flush','Semi-Flush','Integral Upset','Riser'];
 
 const odToMm = {
   '1.9':48.26,'2 3/8':60.32,'2 7/8':73.03,'3 1/2':88.90,'4':101.60,
@@ -284,36 +176,56 @@ const odToMm = {
   '16':406.40,'18 5/8':473.08,'20':508.00,'24':609.60,'26':660.00
 };
 
-const DB = {
-  tpco:{name:'TPCO',odRange:[60.32,355.60],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true,'Integral Upset':true,'Riser':true},calIV:true,grades:['J55','K55','N80','L80-1','L80-13Cr','C90','T95','C95','P110','Q125','V140','V150','13Cr','Super 13Cr'],connections:{'T&C':['TP-CQ','TP-G2','TP-G4','TP-WG'],'Integral Flush':['TP-FJ/II'],'Semi-Flush':['TP-NF3'],'Integral Upset':['TP-SFJ','TP-ISF'],'Riser':['TP-FE']}},
-  baosteel:{name:'Baosteel',odRange:[60.32,177.80],endTypes:{'T&C':true,'Integral Flush':true,'Integral Upset':true},calIV:true,grades:['J55','K55','N80','L80-1','L80-13Cr','C90','T95','C95','P110','Q125','13Cr','Super 13Cr'],connections:{'T&C':['BGT1','BGC'],'Integral Flush':['BGC'],'Integral Upset':['BGHY']}},
-  hengyang:{name:'Hengyang',odRange:[60.32,508.00],endTypes:{'T&C':true,'Integral Flush':true,'Integral Upset':true},calIV:true,grades:['J55','K55','N80','L80-1','C90','T95','C95','P110','Q125','13Cr'],connections:{'T&C':['HSM-1','HSM-2','HSM-2-HC','HSN','HSQR','HSSC'],'Integral Flush':['HSFJ'],'Integral Upset':['HSTS']}},
-  changbao:{name:'Changbao',odRange:[60.32,244.48],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true,'Integral Upset':true},calIV:true,grades:['J55','K55','N80','L80-1','C90','T95','C95','P110','Q125','13Cr','Super 13Cr'],connections:{'T&C':['CBS1','CBS2','CBS3','CBS3-HC'],'Integral Flush':['CB-FJ','Flush-Max'],'Semi-Flush':['CB-SF'],'Integral Upset':['MO-EU-PA']}},
-  molong:{name:'Shandong Molong',odRange:[60.32,339.72],endTypes:{'T&C':true,'Integral Flush':true},calIV:true,grades:['J55','K55','N80','L80-1','C90','T95','C95','P110','13Cr'],connections:{'T&C':['MLT-1','MLC-1','MLT-2','MLC-2','MLC-2-HCHT'],'Integral Flush':['ML-CS','ML-FJ']}},
-  vallourec:{name:'Vallourec',odRange:[60.32,660.00],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true,'Riser':true},calIV:true,grades:['J55','K55','N80','L80-1','L80-13Cr','C90','T95','C95','P110','Q125','13Cr','Super 13Cr','15Cr','22Cr Duplex','25Cr Super Duplex'],connections:{'T&C':['VAM TOP','VAM 21','VAM HP','VAM HTTC'],'Integral Flush':['VAM FJL','VAM HTF-NR','VAM BOLT-II'],'Semi-Flush':['VAM SLIJ-II','VAM SLIJ-3'],'Riser':['VAM TOP FE']}},
-  jfe:{name:'JFE',odRange:[60.32,660.40],endTypes:{'T&C':true},calIV:true,grades:['J55','K55','N80','L80-1','L80-13Cr','C90','T95','C95','P110','Q125','13Cr','HP13Cr','15Cr','17Cr'],connections:{'T&C':['FOX','JFEBEAR','JFETIGER','JFELION','JFELION-HW']}},
-  nippon:{name:'Nippon Steel',odRange:[60.32,406.40],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true,'Riser':true},calIV:true,grades:['J55','K55','N80','L80-1','L80-13Cr','C90','T95','C95','P110','Q125','13Cr','Super 13Cr','15Cr','22Cr Duplex'],connections:{'T&C':['VAM TOP','VAM 21','VAM HP','NSMAX-GR'],'Integral Flush':['VAM FJL','VAM HTF'],'Semi-Flush':['VAM SLIJ-II'],'Riser':['VAM TOP FE']}},
-  hunting:{name:'Hunting',odRange:[48.26,508.00],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true},calIV:true,grades:['J55','K55','N80','L80-1','C90','T95','C95','P110','Q125','13Cr','Super 13Cr','15Cr','22Cr Duplex'],connections:{'T&C':['SEAL-LOCK','SEAL-LOCK XD','WEDGE-LOCK HT'],'Integral Flush':['SEAL-LOCK FLUSH','WEDGE-LOCK FLUSH'],'Semi-Flush':['SEAL-LOCK SF','WEDGE-LOCK SF']}},
-  voestalpine:{name:'Voestalpine',odRange:[48.26,193.68],endTypes:{'T&C':true,'Integral Flush':true,'Semi-Flush':true},calIV:true,grades:['J55','K55','N80','L80-1','C90','T95','C95','P110','13Cr','Super 13Cr'],connections:{'T&C':['VAsuperior','VAsuperior-ET','VAxplorer','VAtitan-TC'],'Integral Flush':['VAF'],'Semi-Flush':['VAtitan-SF']}}
-};
+async function loadData() {
+  try {
+    const res = await fetch('data.json');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    DB = await res.json();
+    COMPETITORS_LIST = Object.values(DB).map(c => ({id: c.id, name: c.name, region: c.region}));
+    selected = new Set(['tpco','vallourec','jfe','hunting','nippon'].filter(id => DB[id]));
+    document.getElementById('statusDot').className = 'status-dot ok';
+    document.getElementById('statusText').textContent = `${COMPETITORS_LIST.length} competitors loaded`;
+    buildCompList();
+    buildGradeDropdowns();
+  } catch(e) {
+    document.getElementById('statusDot').className = 'status-dot err';
+    document.getElementById('statusText').textContent = 'data.json not found — using built-in data';
+    loadFallback();
+  }
+}
 
-let selected = new Set(['tpco','vallourec','jfe','hunting','nippon']);
-let rowCount = 0;
+function loadFallback() {
+  // Minimal fallback so app doesn't break if data.json isn't found
+  DB = {};
+  COMPETITORS_LIST = [];
+  document.getElementById('compList').innerHTML = '<div style="font-size:12px;color:var(--red-text);padding:8px">Could not load data.json.<br>Please upload it to the same folder as this HTML file.</div>';
+}
 
-function buildCompList(){
+// ── GRADE DROPDOWNS (built from loaded data) ──────────────────────────────
+let ALL_GRADES = [];
+function buildGradeDropdowns() {
+  const gradeSet = new Set();
+  Object.values(DB).forEach(comp => {
+    (comp.grades || []).forEach(g => gradeSet.add(g));
+  });
+  ALL_GRADES = [...gradeSet].sort();
+}
+
+// ── COMPETITOR LIST ───────────────────────────────────────────────────────
+function buildCompList() {
   const el = document.getElementById('compList');
   el.innerHTML = '';
-  COMPETITORS.forEach(c=>{
+  COMPETITORS_LIST.forEach(c => {
     const div = document.createElement('div');
-    div.className = 'comp-item' + (selected.has(c.id)?' active':'');
-    div.id = 'comp-'+c.id;
+    div.className = 'comp-item' + (selected.has(c.id) ? ' active' : '');
+    div.id = 'comp-' + c.id;
     div.innerHTML = `
       <div class="comp-check-box">
         <svg width="10" height="8" viewBox="0 0 10 8" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 4 7 9 1"/></svg>
       </div>
       <span class="comp-name">${c.name}</span>
       <span class="comp-region">${c.region}</span>`;
-    div.addEventListener('click',()=>{
+    div.addEventListener('click', () => {
       if(selected.has(c.id)) selected.delete(c.id);
       else selected.add(c.id);
       div.classList.toggle('active', selected.has(c.id));
@@ -322,45 +234,34 @@ function buildCompList(){
   });
 }
 
-function addRow(){
+// ── ADD ROW ───────────────────────────────────────────────────────────────
+function addRow() {
   rowCount++;
   const empty = document.getElementById('emptyState');
   if(empty) empty.remove();
+  const gradeOpts = ALL_GRADES.map(g => `<option>${g}</option>`).join('');
   const div = document.createElement('div');
   div.className = 'req-row';
-  div.id = 'req-'+rowCount;
+  div.id = 'req-' + rowCount;
   div.innerHTML = `
     <div class="row-num">${rowCount}</div>
-    <div class="field">
-      <label>OD (in)</label>
-      <select class="f-od">
-        <option value="">— select —</option>
-        ${OD_SIZES.map(s=>`<option>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label>End type</label>
-      <select class="f-et">
-        <option value="">— any —</option>
-        ${END_TYPES.map(s=>`<option>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label>Steel grade</label>
-      <select class="f-grade">
-        <option value="">— any —</option>
-        ${GRADES.map(s=>`<option>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label>CAL level</label>
-      <select class="f-cal">
-        <option value="">— any —</option>
-        ${CAL_LEVELS.map(s=>`<option>${s}</option>`).join('')}
-      </select>
-    </div>
-    <div class="field">
-      <label>Min drift (in)</label>
+    <div class="field"><label>OD (in)</label><select class="f-od">
+      <option value="">— select —</option>
+      ${OD_SIZES.map(s=>`<option>${s}</option>`).join('')}
+    </select></div>
+    <div class="field"><label>End type</label><select class="f-et">
+      <option value="">— any —</option>
+      ${END_TYPES.map(s=>`<option>${s}</option>`).join('')}
+    </select></div>
+    <div class="field"><label>Steel grade</label><select class="f-grade">
+      <option value="">— any —</option>
+      ${gradeOpts}
+    </select></div>
+    <div class="field"><label>CAL level</label><select class="f-cal">
+      <option value="">— any —</option>
+      ${CAL_LEVELS.map(s=>`<option>${s}</option>`).join('')}
+    </select></div>
+    <div class="field"><label>Min drift (in)</label>
       <input type="number" class="f-drift" placeholder="Optional" step="0.001">
     </div>
     <button class="del-btn" onclick="removeRow('req-${rowCount}')" title="Remove">
@@ -369,78 +270,197 @@ function addRow(){
   document.getElementById('reqContainer').appendChild(div);
 }
 
-function removeRow(id){
+function removeRow(id) {
   const el = document.getElementById(id);
   if(el) el.remove();
-  if(!document.querySelectorAll('.req-row').length){
-    const c = document.getElementById('reqContainer');
-    c.innerHTML = '<div class="empty-state" id="emptyState">No requirements added yet. Click "Add requirement" to start.</div>';
+  if(!document.querySelectorAll('.req-row').length) {
+    document.getElementById('reqContainer').innerHTML = '<div class="empty-state" id="emptyState">No requirements added yet. Click "Add requirement" to start.</div>';
   }
 }
 
-function evaluate(compId, req){
+// ── EVALUATE ──────────────────────────────────────────────────────────────
+function evaluate(compId, req) {
   const d = DB[compId];
-  if(!d) return {cls:'cell-na',name:'—',note:''};
+  if(!d) return {cls:'cell-na', name:'—', note:'No data'};
+
   const odMm = odToMm[req.od];
-  if(!odMm) return {cls:'cell-na',name:'—',note:'No OD selected'};
-  if(odMm < d.odRange[0] || odMm > d.odRange[1])
-    return {cls:'cell-red',name:'—',note:'Does not manufacture OD'};
-  if(req.et && !d.endTypes[req.et])
-    return {cls:'cell-red',name:'—',note:`No ${req.et} option`};
-  const conns = (req.et && d.connections[req.et]) ? d.connections[req.et] : Object.values(d.connections).flat();
-  const best = conns.slice(0,2);
-  if(req.grade && !d.grades.includes(req.grade))
-    return {cls:'cell-red',name:best.join(', '),note:`${req.grade} not available`};
-  let issues = [];
-  if(req.cal === 'CAL IV' && !d.calIV) issues.push('CAL IV N/A');
-  else if(req.cal === 'CAL II' && d.calIV && !DB[compId].calII) {}
-  if(issues.length)
-    return {cls:'cell-yellow',name:best.join(', '),note:issues.join(' · ')};
-  return {cls:'cell-green',name:best.join(', '),note:'All parameters match'};
+  if(!odMm && req.od) return {cls:'cell-na', name:'—', note:'Unknown OD'};
+
+  // Find matching connections
+  let matching = d.connections || [];
+
+  // Filter by OD
+  if(odMm) {
+    matching = matching.filter(c => {
+      if(!c.odMin || !c.odMax) return true; // if no OD data, don't exclude
+      return odMm >= c.odMin && odMm <= c.odMax;
+    });
+    if(matching.length === 0) return {cls:'cell-red', name:'—', note:'Does not manufacture this OD'};
+  }
+
+  // Filter by End Type
+  if(req.et) {
+    const etMatch = matching.filter(c => c.endType === req.et);
+    if(etMatch.length === 0) return {cls:'cell-red', name:'—', note:`No ${req.et} option`};
+    matching = etMatch;
+  }
+
+  // Filter by Grade
+  if(req.grade) {
+    const gradeMatch = matching.filter(c => (c.grades || d.grades || []).includes(req.grade));
+    if(gradeMatch.length === 0) {
+      const best = matching.slice(0,2).map(c=>c.name).join(', ');
+      return {cls:'cell-red', name:best, note:`${req.grade} not available`};
+    }
+    matching = gradeMatch;
+  }
+
+  // Take best 2
+  const best = matching.slice(0,2).map(c=>c.name).join(', ');
+
+  // Check CAL — yellow if mismatch
+  if(req.cal && req.cal !== 'N/A') {
+    const calMatch = matching.filter(c => c.cal === req.cal);
+    if(calMatch.length === 0) {
+      return {cls:'cell-yellow', name:best, note:`${req.cal} not confirmed`};
+    }
+  }
+
+  // Check dopeless
+  if(req.cal === 'CAL IV') {
+    const calBest = matching.filter(c => c.cal === 'CAL IV').slice(0,2).map(c=>c.name).join(', ');
+    return {cls:'cell-green', name:calBest || best, note:'All parameters match'};
+  }
+
+  return {cls:'cell-green', name:best, note:'All parameters match'};
 }
 
-function generate(){
+// ── GENERATE TABLE ────────────────────────────────────────────────────────
+function generate() {
   const rows = document.querySelectorAll('.req-row');
-  if(!rows.length){ alert('Please add at least one requirement.'); return; }
-  if(!selected.size){ alert('Please select at least one competitor.'); return; }
+  if(!rows.length) { alert('Please add at least one requirement.'); return; }
+  if(!selected.size) { alert('Please select at least one competitor.'); return; }
+
   const reqs = [];
-  rows.forEach(r=>{
+  rows.forEach(r => {
     reqs.push({
-      od: r.querySelector('.f-od').value,
-      et: r.querySelector('.f-et').value,
+      od:    r.querySelector('.f-od').value,
+      et:    r.querySelector('.f-et').value,
       grade: r.querySelector('.f-grade').value,
-      cal: r.querySelector('.f-cal').value,
+      cal:   r.querySelector('.f-cal').value,
       drift: r.querySelector('.f-drift').value
     });
   });
-  const compList = COMPETITORS.filter(c=>selected.has(c.id));
+
+  const compList = COMPETITORS_LIST.filter(c => selected.has(c.id));
+  lastResults = {reqs, compList, cells: []};
+
   let html = '<thead><tr><th>Requirement</th>';
-  compList.forEach(c=>{ html+=`<th>${c.name}</th>`; });
-  html+='</tr></thead><tbody>';
-  reqs.forEach((req,i)=>{
-    const parts = [req.od?req.od+'"':'',req.et,req.grade,req.cal,req.drift?'Drift ≥'+req.drift+'"':''].filter(Boolean);
+  compList.forEach(c => { html += `<th>${c.name}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  reqs.forEach((req, i) => {
+    const parts = [req.od?req.od+'"':'', req.et, req.grade, req.cal, req.drift?'Drift ≥'+req.drift+'"':''].filter(Boolean);
     const label = parts.length ? parts.join('  ·  ') : 'Requirement '+(i+1);
-    html+=`<tr><td><span class="req-pill">${label}</span></td>`;
-    compList.forEach(c=>{
+    html += `<tr><td><span class="req-pill">${label}</span></td>`;
+    const rowCells = [];
+    compList.forEach(c => {
       const r = evaluate(c.id, req);
-      html+=`<td class="${r.cls}"><span class="conn-name">${r.name}</span><span class="conn-note">${r.note}</span></td>`;
+      rowCells.push({...r, comp: c.name, req: label});
+      html += `<td class="${r.cls}"><span class="conn-name">${r.name}</span><span class="conn-note">${r.note}</span></td>`;
     });
-    html+='</tr>';
+    lastResults.cells.push(rowCells);
+    html += '</tr>';
   });
-  html+='</tbody>';
+
+  html += '</tbody>';
   document.getElementById('outputTable').innerHTML = html;
   document.getElementById('outputSection').style.display = 'block';
-  document.getElementById('outputSection').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('outputSection').scrollIntoView({behavior:'smooth', block:'start'});
 }
 
-function clearAll(){
+// ── EXPORT TO EXCEL ───────────────────────────────────────────────────────
+function exportExcel() {
+  if(!lastResults || !lastResults.cells || !lastResults.cells.length) {
+    alert('Generate the table first before exporting.');
+    return;
+  }
+
+  const wb = XLSX.utils.book_new();
+  const wsData = [];
+
+  // Header row
+  const header = ['Requirement', ...lastResults.compList.map(c => c.name)];
+  wsData.push(header);
+
+  // Data rows
+  lastResults.cells.forEach((rowCells, i) => {
+    const req = lastResults.reqs[i];
+    const parts = [req.od?req.od+'"':'', req.et, req.grade, req.cal, req.drift?'Drift ≥'+req.drift+'"':''].filter(Boolean);
+    const label = parts.length ? parts.join(' · ') : 'Requirement '+(i+1);
+    const row = [label, ...rowCells.map(c => c.name + (c.note ? '\n' + c.note : ''))];
+    wsData.push(row);
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+  // Color cells
+  const colorMap = {
+    'cell-green':  {fgColor:{rgb:'003D30'}},
+    'cell-yellow': {fgColor:{rgb:'3D3000'}},
+    'cell-red':    {fgColor:{rgb:'3D0A0A'}},
+    'cell-na':     {fgColor:{rgb:'1A2F4A'}},
+  };
+  const fontMap = {
+    'cell-green':  {color:{rgb:'00F5C4'}, bold:true},
+    'cell-yellow': {color:{rgb:'FFD700'}, bold:true},
+    'cell-red':    {color:{rgb:'FF6B6B'}, bold:true},
+    'cell-na':     {color:{rgb:'4A5F75'}},
+  };
+
+  lastResults.cells.forEach((rowCells, rowIdx) => {
+    rowCells.forEach((cell, colIdx) => {
+      const cellRef = XLSX.utils.encode_cell({r: rowIdx + 1, c: colIdx + 1});
+      if(!ws[cellRef]) return;
+      ws[cellRef].s = {
+        fill: colorMap[cell.cls] || {},
+        font: fontMap[cell.cls] || {},
+        alignment: {wrapText: true, vertical: 'top'}
+      };
+    });
+  });
+
+  // Style header row
+  header.forEach((_, colIdx) => {
+    const cellRef = XLSX.utils.encode_cell({r: 0, c: colIdx});
+    if(!ws[cellRef]) return;
+    ws[cellRef].s = {
+      fill: {fgColor: {rgb: '132238'}},
+      font: {color: {rgb: '7A90A8'}, bold: true},
+      alignment: {horizontal: 'center'}
+    };
+  });
+
+  // Column widths
+  ws['!cols'] = [{wch:30}, ...lastResults.compList.map(() => ({wch:22}))];
+
+  // Row heights
+  ws['!rows'] = [{hpt:20}, ...lastResults.cells.map(() => ({hpt:40}))];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'OCTG Analysis');
+  XLSX.writeFile(wb, `OCTG_Analysis_${new Date().toISOString().slice(0,10)}.xlsx`);
+}
+
+// ── CLEAR ─────────────────────────────────────────────────────────────────
+function clearAll() {
   document.getElementById('reqContainer').innerHTML = '<div class="empty-state" id="emptyState">No requirements added yet. Click "Add requirement" to start.</div>';
   document.getElementById('outputSection').style.display = 'none';
   rowCount = 0;
+  lastResults = [];
 }
 
-buildCompList();
+// ── INIT ──────────────────────────────────────────────────────────────────
+loadData();
 </script>
 </body>
 </html>
-
