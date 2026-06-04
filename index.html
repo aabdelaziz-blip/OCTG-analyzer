@@ -155,7 +155,7 @@ tr:last-child td{border-bottom:none}
 var DB={}, COMPS=[], SEL_ORDER=[], rowN=0, lastRes=null;
 
 var ODS=['1.9','2 3/8','2 7/8','3 1/2','4','4 1/2','5','5 1/2','6 5/8','7','7 5/8','7 3/4','8 5/8','9 5/8','10 3/4','11 3/4','13 3/8','14','16','18 5/8','20','24','26'];
-var ETS=['T&C','Integral Flush','Semi-Flush','Integral Upset','Riser'];
+var ETS=['T&C','Integral Flush','Integral Semi-Flush','Integral Upset','Riser'];
 var QUALS=['CAL IV','CAL II','CAL I','ASL 350','N/A'];
 var O2M={'1.9':48.26,'2 3/8':60.32,'2 7/8':73.03,'3 1/2':88.90,'4':101.60,'4 1/2':114.30,'5':127.00,'5 1/2':139.70,'6 5/8':168.28,'7':177.80,'7 5/8':193.68,'7 3/4':196.85,'8 5/8':219.08,'9 5/8':244.48,'10 3/4':273.05,'11 3/4':298.45,'13 3/8':339.72,'14':355.60,'16':406.40,'18 5/8':473.08,'20':508.00,'24':609.60,'26':660.00};
 
@@ -350,34 +350,26 @@ function evalComp(cid, req){
 }
 
 function smartSelect(conns, max){
-  // Sort: CAL IV first, then CAL II, then others, deduplicate by name
   var order = {'CAL IV':0,'CAL II':1,'CAL I':2,'ASL 350':3,'N/A':4};
   var sorted = conns.slice().sort(function(a,b){
+    // Primary: CAL level
     var diff = (order[a.cal]||9) - (order[b.cal]||9);
     if(diff !== 0) return diff;
-    // Secondary sort: prefer connections with larger OD range (more versatile)
+    // Secondary: wider OD range = more versatile = show first
     var aRange = (a.odMax||0) - (a.odMin||0);
     var bRange = (b.odMax||0) - (b.odMin||0);
     return bRange - aRange;
   });
-  // Deduplicate by name, take up to max
-  // But: if top result is CAL IV, try to fill remaining slots with other CAL IV connections
+  // Take up to max, but only from the top CAL level
   var seen = {}, result = [];
-  // First pass: fill with highest CAL level matches
   var topCal = sorted.length > 0 ? sorted[0].cal : null;
-  for(var i=0; i<sorted.length && result.length<max; i++){
+  for(var i=0; i<sorted.length; i++){
+    if(result.length >= max) break;
     if(!seen[sorted[i].name]){
-      // Only mix CAL levels if we have fewer than 1 result
-      if(result.length > 0 && sorted[i].cal !== topCal) break;
-      seen[sorted[i].name]=1;
+      // Only show same CAL level — never mix CAL IV with CAL II in same cell
+      if(sorted[i].cal !== topCal) break;
+      seen[sorted[i].name] = 1;
       result.push(sorted[i]);
-    }
-  }
-  // If we only got 1 and there are more of same CAL, that means max=1 was set correctly
-  // If we have space, fill with next best
-  if(result.length < max){
-    for(var i=0; i<sorted.length && result.length<max; i++){
-      if(!seen[sorted[i].name]){ seen[sorted[i].name]=1; result.push(sorted[i]); }
     }
   }
   return result;
@@ -484,33 +476,42 @@ function exportXL(){
 
   lastRes.cl.forEach(function(_,i){ ws.getColumn(i+1).width = 22; });
 
-  // Universal download — works in browser AND Power BI iframe
+  // Universal export — works in browser AND Power BI
   wb.xlsx.writeBuffer().then(function(buf){
     var fname = 'OCTG_Analysis_' + new Date().toISOString().slice(0,10) + '.xlsx';
     try {
-      // Convert buffer to base64
+      // Convert to base64
       var arr = new Uint8Array(buf);
       var b64 = '';
       var chunk = 8192;
       for(var i=0; i<arr.length; i+=chunk){
-        b64 += String.fromCharCode.apply(null, arr.subarray(i,Math.min(i+chunk,arr.length)));
+        b64 += String.fromCharCode.apply(null, arr.subarray(i, Math.min(i+chunk, arr.length)));
       }
       b64 = btoa(b64);
       var uri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
+
+      // Method 1: Try direct download link
       var a = document.createElement('a');
-      a.setAttribute('href', uri);
-      a.setAttribute('download', fname);
-      a.style.position = 'fixed';
-      a.style.top = '0';
-      a.style.left = '0';
-      a.style.opacity = '0';
+      a.href = uri;
+      a.download = fname;
+      a.style.display = 'none';
       document.body.appendChild(a);
       a.click();
-      setTimeout(function(){ 
-        if(a.parentNode) a.parentNode.removeChild(a); 
-      }, 2000);
+      document.body.removeChild(a);
+
+      // Method 2: Also open in new window as fallback (works in PBI)
+      setTimeout(function(){
+        try {
+          var w = window.open('', '_blank');
+          if(w){
+            w.document.write('<html><body><p>Your file is ready. <a href="' + uri + '" download="' + fname + '">Click here to download</a> if it did not start automatically.</p><script>window.location.href="' + uri + '";<\/script></body></html>');
+            w.document.close();
+          }
+        } catch(e2){ /* silently ignore */ }
+      }, 500);
+
     } catch(e){
-      alert('Export error: ' + e.message + '\nTry opening the app directly in a browser tab.');
+      alert('Export error: ' + e.message);
     }
   }).catch(function(e){ alert('Export failed: ' + e.message); });
 }
