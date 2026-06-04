@@ -161,16 +161,87 @@ var O2M={'1.9':48.26,'2 3/8':60.32,'2 7/8':73.03,'3 1/2':88.90,'4':101.60,'4 1/2
 
 // KSI groups — standard API + common proprietary grades per ksi
 var KSI_GROUPS = {
-  '55':  { api:['J55','K55'],         prop:[] },
-  '65':  { api:[],                    prop:['BG65','L80-9Cr'] },
-  '80':  { api:['N80','L80-1','L80-13Cr','L80-9Cr'], prop:['BG80','TP80S','HSM80','13Cr-80'] },
-  '90':  { api:['C90'],               prop:['BG90','TP90','13Cr-90'] },
-  '95':  { api:['T95','C95'],         prop:['BG95','TP95','13Cr-95'] },
-  '110': { api:['P110'],              prop:['13Cr-110','Super 13Cr-110','HP13Cr-110','TP110S','BG110','22Cr-110','25Cr-110'] },
-  '125': { api:['Q125'],              prop:['13Cr-125','TP125','BG125'] },
-  '140': { api:[],                    prop:['TP140','BG140','V140','TP140HC','TP140V'] },
-  '150': { api:[],                    prop:['TP150','BG150'] },
+  '55':  ['J55','K55'],
+  '80':  ['N80','L80-1','L80-9Cr','L80-13Cr','High Collapse','Sour Service','13Cr'],
+  '90':  ['C90','Sour Service','13Cr'],
+  '95':  ['T95','C95','High Collapse','Sour Service','HC + Sour Service','13Cr','Super 13Cr','HP 13Cr'],
+  '110': ['P110','High Collapse','Sour Service','HC + Sour Service','13Cr','Super 13Cr','HP 13Cr','17Cr','22Cr Duplex'],
+  '125': ['Q125','High Collapse','Sour Service','HC + Sour Service','Super 13Cr','HP 13Cr','15Cr','22Cr Duplex','25Cr Super Duplex'],
+  '140': ['High Strength','Super 13Cr','22Cr Duplex','25Cr Super Duplex'],
+  '150': ['High Strength','25Cr Super Duplex'],
 };
+
+// Category + KSI → per-competitor specific grade name
+// null = not available for this competitor → Red
+// Indexed as GRADE_MATRIX[category][ksi][competitorId]
+var GRADE_MATRIX = {
+  'J55':               { any:  { tpco:'J55',        hengyang:'J55',        baosteel:'J55',       changbao:'J55',    molong:'J55',    vallourec:'J55',        jfe:'J55',               nippon:'J55',            hunting:'J55',        voestalpine:'J55'       }},
+  'K55':               { any:  { tpco:'K55',        hengyang:'K55',        baosteel:'K55',       changbao:'K55',    molong:'K55',    vallourec:'K55',        jfe:'K55',               nippon:'K55',            hunting:'K55',        voestalpine:'K55'       }},
+  'N80':               { any:  { tpco:'N80',        hengyang:'N80',        baosteel:'N80',       changbao:'N80',    molong:'N80',    vallourec:'N80',        jfe:'N80',               nippon:'N80',            hunting:'N80',        voestalpine:'N80'       }},
+  'L80-1':             { any:  { tpco:'L80-1',      hengyang:'L80-1',      baosteel:'L80-1',     changbao:'L80-1',  molong:'L80-1',  vallourec:'L80-1',      jfe:'L80-1',             nippon:'L80-1',          hunting:'L80-1',      voestalpine:'L80-1'     }},
+  'L80-9Cr':           { any:  { tpco:'L80-9Cr',    hengyang:'L80-9Cr',    baosteel:'L80-9Cr',   changbao:null,     molong:null,     vallourec:'L80-9Cr',    jfe:'L80-9Cr',           nippon:'L80-9Cr',        hunting:'L80-9Cr',    voestalpine:'L80-9Cr'   }},
+  'L80-13Cr':          { any:  { tpco:'L80-13Cr',   hengyang:'L80-13Cr',   baosteel:'L80-13Cr',  changbao:'L80-13Cr', molong:'L80-13Cr', vallourec:'L80-13Cr', jfe:'L80-13Cr',       nippon:'L80-13Cr',       hunting:'L80-13Cr',   voestalpine:'L80-13Cr'  }},
+  'C90':               { any:  { tpco:'C90',        hengyang:'C90',        baosteel:'C90',       changbao:'C90',    molong:'C90',    vallourec:'C90',        jfe:'C90',               nippon:'C90',            hunting:'C90',        voestalpine:'C90'       }},
+  'T95':               { any:  { tpco:'T95',        hengyang:'T95',        baosteel:'T95',       changbao:'T95',    molong:'T95',    vallourec:'T95',        jfe:'T95',               nippon:'T95',            hunting:'T95',        voestalpine:'T95'       }},
+  'C95':               { any:  { tpco:'C95',        hengyang:'C95',        baosteel:'C95',       changbao:'C95',    molong:'C95',    vallourec:'C95',        jfe:'C95',               nippon:'C95',            hunting:'C95',        voestalpine:'C95'       }},
+  'P110':              { any:  { tpco:'P110',       hengyang:'P110',       baosteel:'P110',      changbao:'P110',   molong:'P110',   vallourec:'P110',       jfe:'P110',              nippon:'P110',           hunting:'P110',       voestalpine:'P110'      }},
+  'Q125':              { any:  { tpco:'Q125',       hengyang:'Q125',       baosteel:'Q125',      changbao:'Q125',   molong:'Q125',   vallourec:'Q125',       jfe:'Q125',              nippon:'Q125',           hunting:'Q125',       voestalpine:null        }},
+  'High Collapse':     {
+    '80':  { tpco:'TP-HC80',    hengyang:null,       baosteel:'BG-HC80',   changbao:null,     molong:null,     vallourec:'VM80HC',     jfe:'JFE-HC80',          nippon:'SM-80HC',        hunting:null,         voestalpine:null        },
+    '95':  { tpco:'TP-HC95',    hengyang:null,       baosteel:'BG-HC95',   changbao:null,     molong:null,     vallourec:'VM95HC',     jfe:'JFE-HC95',          nippon:'SM-95HC',        hunting:null,         voestalpine:null        },
+    '110': { tpco:'TP-HC110',   hengyang:null,       baosteel:'BG-HC110',  changbao:null,     molong:null,     vallourec:'VM110HC',    jfe:'JFE-HC110',         nippon:'SM-C110T',       hunting:null,         voestalpine:null        },
+    '125': { tpco:'TP-HC125',   hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM125HC',    jfe:null,                nippon:'SM-125HC',       hunting:null,         voestalpine:null        },
+    '140': { tpco:'TP-HC140',   hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM140HC',    jfe:null,                nippon:null,             hunting:null,         voestalpine:null        },
+  },
+  'Sour Service':      {
+    '80':  { tpco:'TP-SS80',    hengyang:null,       baosteel:'BG-SS80',   changbao:null,     molong:null,     vallourec:'VM80SS',     jfe:'JFE-SS80',          nippon:'SM-80SS',        hunting:null,         voestalpine:null        },
+    '95':  { tpco:'TP-SS95',    hengyang:null,       baosteel:'BG-SS95',   changbao:null,     molong:null,     vallourec:'VM95SS',     jfe:'JFE-SS95',          nippon:'SM-95SS',        hunting:null,         voestalpine:null        },
+    '110': { tpco:'TP-SS110',   hengyang:null,       baosteel:'BG-SS110',  changbao:null,     molong:null,     vallourec:'VM110SS',    jfe:'JFE-SS110',         nippon:'SM-110SS',       hunting:null,         voestalpine:null        },
+    '125': { tpco:'TP-SS125',   hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM125SS',    jfe:null,                nippon:'SM-125SS',       hunting:null,         voestalpine:null        },
+  },
+  'HC + Sour Service': {
+    '95':  { tpco:'TP-HCSS95',  hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM95HCSS',   jfe:null,                nippon:'SM-95TXS',       hunting:null,         voestalpine:null        },
+    '110': { tpco:'TP-HCSS110', hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM110HCSS',  jfe:null,                nippon:'SM-C110T',       hunting:null,         voestalpine:null        },
+    '125': { tpco:'TP-HCSS125', hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM125HCSS',  jfe:null,                nippon:'SM-125TXS',      hunting:null,         voestalpine:null        },
+  },
+  'High Strength':     {
+    '140': { tpco:'TP140V',     hengyang:'HS140',    baosteel:'BG140',     changbao:'CB140',  molong:null,     vallourec:'VM140',      jfe:null,                nippon:'SM-140MS',       hunting:null,         voestalpine:null        },
+    '150': { tpco:'TP150V',     hengyang:null,       baosteel:null,        changbao:null,     molong:null,     vallourec:'VM150',      jfe:null,                nippon:null,             hunting:null,         voestalpine:null        },
+  },
+  '13Cr':              {
+    '80':  { tpco:'TP13Cr-80',  hengyang:'HS13Cr-80',  baosteel:'BG13Cr-80',  changbao:'CB13Cr-80', molong:'ML13Cr-80', vallourec:'VM13Cr-80',  jfe:'JFE-13Cr-80',   nippon:'SM13Cr-80',      hunting:'13Cr-80',    voestalpine:'VA13Cr-80'  },
+    '95':  { tpco:'TP13Cr-95',  hengyang:'HS13Cr-95',  baosteel:'BG13Cr-95',  changbao:'CB13Cr-95', molong:null,        vallourec:'VM13Cr-95',  jfe:'JFE-13Cr-95',   nippon:'SM13Cr-95',      hunting:'13Cr-95',    voestalpine:'VA13Cr-95'  },
+    '110': { tpco:'TP13Cr-110', hengyang:'HS13Cr-110', baosteel:'BG13Cr-110', changbao:'CB13Cr-110',molong:null,        vallourec:'VM13Cr-110', jfe:'JFE-13Cr-110',  nippon:'SM13Cr-110',     hunting:'13Cr-110',   voestalpine:null         },
+  },
+  'Super 13Cr':        {
+    '95':  { tpco:'SUP13Cr-95',  hengyang:'HSSUP13Cr-95',  baosteel:'BGSup13Cr-95',  changbao:null, molong:null, vallourec:'VM13CrSS-95',  jfe:'JFE-HP2-13Cr-95',  nippon:'SM-SUP13Cr-95',  hunting:'Sup13Cr-95',  voestalpine:'VASup13Cr-95' },
+    '110': { tpco:'SUP13Cr-110', hengyang:'HSSUP13Cr-110', baosteel:'BGSup13Cr-110', changbao:null, molong:null, vallourec:'VM13CrSS-110', jfe:'JFE-HP2-13Cr-110', nippon:'SM-SUP13Cr-110', hunting:'Sup13Cr-110', voestalpine:'VASup13Cr-110'},
+    '125': { tpco:'SUP13Cr-125', hengyang:null,             baosteel:'BGSup13Cr-125', changbao:null, molong:null, vallourec:null,           jfe:null,               nippon:'SM-SUP13Cr-125', hunting:'Sup13Cr-125', voestalpine:null           },
+    '140': { tpco:'SUP13Cr-140', hengyang:null,             baosteel:null,            changbao:null, molong:null, vallourec:null,           jfe:null,               nippon:null,             hunting:null,          voestalpine:null           },
+  },
+  'HP 13Cr':           {
+    '95':  { tpco:'HP13Cr-95',   hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:'VM13CrSS-95',  jfe:'JFE-HP1-13Cr-95',  nippon:'SM-HP13Cr-95',  hunting:'HP13Cr-95',  voestalpine:null },
+    '110': { tpco:'HP13Cr-110',  hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:'VM13CrSS-110', jfe:'JFE-HP1-13Cr-110', nippon:'SM-HP13Cr-110', hunting:'HP13Cr-110', voestalpine:null },
+    '125': { tpco:'HP13Cr-125',  hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:null,           jfe:null,               nippon:'SM-HP13Cr-125', hunting:'HP13Cr-125', voestalpine:null },
+  },
+  '15Cr':              {
+    '125': { tpco:null, hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:null, jfe:'JFE-UHP-15Cr-125', nippon:null, hunting:null, voestalpine:null },
+  },
+  '17Cr':              {
+    '110': { tpco:null, hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:null, jfe:'JFE-UHP-17Cr-110', nippon:null, hunting:null, voestalpine:null },
+  },
+  '22Cr Duplex':       { any:  { tpco:null, hengyang:null, baosteel:'BG22Cr', changbao:null, molong:null, vallourec:'VM22Cr', jfe:null, nippon:'SM22Cr', hunting:'22Cr', voestalpine:null }},
+  '25Cr Super Duplex': { any:  { tpco:null, hengyang:null, baosteel:'BG25Cr', changbao:null, molong:null, vallourec:'VM25Cr', jfe:null, nippon:'SM25Cr', hunting:'25Cr', voestalpine:null }},
+  'Nickel Alloy':      { any:  { tpco:null, hengyang:null, baosteel:null,     changbao:null, molong:null, vallourec:'VM825/VMG3', jfe:null, nippon:'SM2535/SM2550', hunting:null, voestalpine:null }},
+}
+
+// Generic grade group → per-competitor specific grade names
+// Used to: (1) match connections, (2) display in cell output
+;
+
+// KSI ranges per generic grade group — used for smart matching
+// key = generic grade, value = {min ksi, max ksi, note}
+;
 
 // API grades set for checking if grade is API or proprietary
 var API_GRADES = new Set(['J55','K55','N80','L80-1','L80-13Cr','L80-9Cr','C90','T95','C95','P110','Q125']);
@@ -248,18 +319,21 @@ function addRow(){
     gsel.innerHTML = '<option value="">— any grade —</option>';
     if(!ksi){ gsel.disabled = true; return; }
     gsel.disabled = false;
-    var grp = KSI_GROUPS[ksi];
-    if(!grp) return;
-    if(grp.api.length){
+    var grades = KSI_GROUPS[ksi] || [];
+    // Split into API and specialty
+    var apiGrades = ['J55','K55','N80','L80-1','L80-9Cr','L80-13Cr','C90','T95','C95','P110','Q125'];
+    var apiList = grades.filter(function(g){ return apiGrades.indexOf(g)>=0; });
+    var propList = grades.filter(function(g){ return apiGrades.indexOf(g)<0; });
+    if(apiList.length){
       var og = document.createElement('optgroup');
       og.label = 'API Grades';
-      grp.api.forEach(function(g){ var o=document.createElement('option'); o.value=g; o.textContent=g; og.appendChild(o); });
+      apiList.forEach(function(g){ var o=document.createElement('option'); o.value=g; o.textContent=g; og.appendChild(o); });
       gsel.appendChild(og);
     }
-    if(grp.prop.length){
+    if(propList.length){
       var og2 = document.createElement('optgroup');
-      og2.label = 'Proprietary / Specialty';
-      grp.prop.forEach(function(g){ var o=document.createElement('option'); o.value=g; o.textContent=g; og2.appendChild(o); });
+      og2.label = 'Specialty / Proprietary';
+      propList.forEach(function(g){ var o=document.createElement('option'); o.value=g; o.textContent=g; og2.appendChild(o); });
       gsel.appendChild(og2);
     }
   });
@@ -282,66 +356,88 @@ function evalComp(cid, req){
 
   var m = d.connections || [];
 
-  // Filter by OD
+  // ── OD filter ──────────────────────────────────────────────────────
   if(omm){
     m = m.filter(function(c){ return (!c.odMin||!c.odMax)||(omm>=c.odMin&&omm<=c.odMax); });
-    if(!m.length) return {cls:'cr', lines:['Does not','manufacture OD']};
+    if(!m.length) return {cls:'cr', lines:['Does not manufacture OD','']};
   }
 
-  // Filter by End Type
+  // ── End Type filter ────────────────────────────────────────────────
   if(req.et){
     var em = m.filter(function(c){ return c.endType===req.et; });
-    if(!em.length) return {cls:'cr', lines:['No '+req.et,'option']};
+    if(!em.length) return {cls:'cr', lines:['No '+req.et+' option','']};
     m = em;
   }
 
-  // Filter by KSI — check grades array on connection for ksi match
-  // For now use company-level grades as proxy until connection-level grade data is added
-  if(req.ksi){
-    var grp = KSI_GROUPS[req.ksi] || {api:[], prop:[]};
-    var allKsiGrades = grp.api.concat(grp.prop);
-    var km = m.filter(function(c){
-      var cg = c.grades || d.grades || [];
-      return cg.some(function(g){ return allKsiGrades.indexOf(g) >= 0; });
-    });
-    // If no connection-level grade data yet, don't exclude — just flag
-    if(km.length > 0) m = km;
-  }
+  // ── Grade + KSI smart logic ────────────────────────────────────────
+  var specificGrade = null;  // competitor-specific grade name for display
+  var gradeIssue = null;     // warning message if grade mismatch
 
-  // Filter by specific grade
   if(req.gr){
-    var gm = m.filter(function(c){
-      var cg = c.grades || d.grades || [];
-      return cg.indexOf(req.gr) >= 0;
-    });
-    if(!gm.length){
-      // Grade not found — red
-      var bn = m.slice(0,1).map(function(c){ return c.name; }).join('');
-      return {cls:'cr', lines:[bn||'—', req.gr+' N/A']};
+    var matrix = GRADE_MATRIX[req.gr];
+    if(!matrix){
+      gradeIssue = req.gr + ' — unknown grade';
+    } else {
+      // Look up by KSI first, then fall back to 'any'
+      var lookup = (req.ksi && matrix[req.ksi]) ? matrix[req.ksi] : matrix['any'];
+
+      if(!lookup && req.ksi){
+        // KSI not available for this grade category — find closest
+        var availableKsi = Object.keys(matrix).filter(function(k){ return k !== 'any'; });
+        if(availableKsi.length === 0){
+          var best = smartSelect(m, 1);
+          return {cls:'cr', lines:[best.length?best[0].name:'—', req.gr+' not at '+req.ksi+' ksi']};
+        }
+        // Show yellow — grade exists but not at this KSI
+        var best = smartSelect(m, 1);
+        return {cls:'cy', lines:[best.length?best[0].name:'—', req.gr+' not confirmed at '+req.ksi+' ksi']};
+      }
+
+      if(lookup){
+        var compGrade = lookup[cid];
+        if(compGrade === null){
+          // Competitor explicitly doesn't offer this grade
+          var best = smartSelect(m, 1);
+          return {cls:'cr', lines:[best.length?best[0].name:'—', req.gr+' not available']};
+        }
+        if(compGrade === undefined){
+          gradeIssue = req.gr+' — verify availability';
+        } else {
+          specificGrade = compGrade;
+        }
+      }
     }
-    m = gm;
+  } else if(req.ksi){
+    // KSI only — no specific grade — just check KSI makes sense
+    var ksiGrades = KSI_GROUPS[req.ksi] || [];
+    if(ksiGrades.length === 0){
+      return {cls:'cr', lines:['No '+req.ksi+' ksi grades','in database']};
+    }
   }
 
-  // Smart selection — CAL IV first, then CAL II, then others
-  // Also filter by qualification if specified
-  var calOrder = ['CAL IV','CAL II','CAL I','ASL 350','N/A'];
-  var qualMatch = m;
+  // ── Qualification filter ───────────────────────────────────────────
   if(req.qual){
     var qm = m.filter(function(c){ return c.cal===req.qual; });
     if(!qm.length){
-      // Qual not matched — yellow
       var best = smartSelect(m, 2);
-      return {cls:'cy', lines:[formatConns(best, req), req.qual+' not confirmed']};
+      var l1 = formatConns(best, specificGrade);
+      return {cls:'cy', lines:[l1, req.qual+' not available']};
     }
-    qualMatch = qm;
+    m = qm;
   }
 
-  // Smart select best 1-2
-  var selected = smartSelect(qualMatch, 2);
-  var isProprietaryGrade = req.gr && !API_GRADES.has(req.gr);
-  var line1 = formatConns(selected, req, isProprietaryGrade);
+  // ── Smart select ───────────────────────────────────────────────────
+  var selected = smartSelect(m, 2);
+  if(!selected.length) return {cls:'cn', lines:['—','No matching connection']};
 
-  // Drift check — yellow if drift specified (data TBC)
+  var line1 = formatConns(selected, specificGrade);
+
+  // Grade issue warning — yellow
+  if(gradeIssue){
+    return {cls:'cy', lines:[line1, gradeIssue]};
+  }
+
+  // Drift check
   if(req.dr && parseFloat(req.dr) > 0){
     return {cls:'cy', lines:[line1, 'Drift TBC']};
   }
@@ -375,9 +471,9 @@ function smartSelect(conns, max){
   return result;
 }
 
-function formatConns(conns, req, showGrade){
+function formatConns(conns, specificGrade){
   return conns.map(function(c){
-    return showGrade && req.gr ? c.name + ' / ' + req.gr : c.name;
+    return specificGrade ? c.name + ' / ' + specificGrade : c.name;
   }).join('\n');
 }
 
