@@ -472,9 +472,9 @@ function smartSelect(conns, max){
 }
 
 function formatConns(conns, specificGrade){
-  return conns.map(function(c){
-    return specificGrade ? c.name + ' / ' + specificGrade : c.name;
-  }).join('\n');
+  // Group connection names together, show grade once at the end
+  var names = conns.map(function(c){ return c.name; }).join(', ');
+  return specificGrade ? names + ' / ' + specificGrade : names;
 }
 
 // ── GENERATE ──────────────────────────────────────────────────────────────
