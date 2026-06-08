@@ -5714,6 +5714,16 @@
       "TN-Alloy28",
       "TN-Alloy825",
       "TN-G3"
+    ],
+    "odMin": 60.32,
+    "odMax": 1066.8,
+    "endTypes": [
+      "Integral Flush",
+      "Integral Semi-Flush",
+      "Integral Upset",
+      "Riser",
+      "T&C",
+      "Weld-on Connector"
     ]
   }
 }

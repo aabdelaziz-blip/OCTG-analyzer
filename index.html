@@ -476,8 +476,8 @@ function evalComp(cid, req){
 function smartSelect(conns, max){
   var order = {'CAL IV':0,'CAL II':1,'CAL I':2,'ASL 350':3,'N/A':4};
   var sorted = conns.slice().sort(function(a,b){
-    // Primary: CAL level
-    var diff = (order[a.cal]||9) - (order[b.cal]||9);
+    // Primary: CAL level (use explicit undefined check — 0 is falsy)
+    var diff = (order[a.cal]!==undefined?order[a.cal]:9) - (order[b.cal]!==undefined?order[b.cal]:9);
     if(diff !== 0) return diff;
     // Secondary: wider OD range = more versatile = show first
     var aRange = (a.odMax||0) - (a.odMin||0);
