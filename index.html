@@ -92,6 +92,7 @@ tr:last-child td{border-bottom:none}
 .cr{background:#FF0000;color:#000}
 .cn{background:var(--navy3);color:var(--txt3);font-style:italic;font-weight:400}
 .cn2{font-weight:400;font-size:11px;display:block;margin-top:2px}
+.cn2.grade{color:rgba(0,0,0,0.55);font-style:italic}
 </style>
 </head>
 <body>
@@ -403,11 +404,11 @@ function evalComp(cid, req){
         var availableKsi = Object.keys(matrix).filter(function(k){ return k !== 'any'; });
         if(availableKsi.length === 0){
           var best = smartSelect(m, 1);
-          return {cls:'cr', lines:[best.length?best[0].name:'—', req.gr+' not at '+req.ksi+' ksi']};
+          return {cls:'cr', lines:[best.length?formatConns(best):'—', req.gr+' not at '+req.ksi+' ksi']};
         }
         // Show yellow — grade exists but not at this KSI
         var best = smartSelect(m, 1);
-        return {cls:'cy', lines:[best.length?best[0].name:'—', req.gr+' not confirmed at '+req.ksi+' ksi']};
+        return {cls:'cy', lines:[best.length?formatConns(best):'—', req.gr+' not confirmed at '+req.ksi+' ksi']};
       }
 
       if(lookup){
@@ -415,7 +416,7 @@ function evalComp(cid, req){
         if(compGrade === null){
           // Competitor explicitly doesn't offer this grade
           var best = smartSelect(m, 1);
-          return {cls:'cr', lines:[best.length?best[0].name:'—', req.gr+' not available']};
+          return {cls:'cr', lines:[best.length?formatConns(best):'—', req.gr+' not available']};
         }
         if(compGrade === undefined){
           gradeIssue = req.gr+' — verify availability';
@@ -432,13 +433,23 @@ function evalComp(cid, req){
     }
   }
 
+  // ── Filter connections by grade key ───────────────────────────────
+  // If we resolved a specificGrade, narrow connections to those whose
+  // .grades array contains that grade key. Fall back to all if none match.
+  if(specificGrade){
+    var gm = m.filter(function(c){ return c.grades && c.grades.indexOf(specificGrade) !== -1; });
+    if(gm.length) m = gm;
+    // If no connection has this grade key, keep all — grade still shown as warning
+  }
+
   // ── Qualification filter ───────────────────────────────────────────
   if(req.qual){
     var qm = m.filter(function(c){ return c.cal===req.qual; });
     if(!qm.length){
       var best = smartSelect(m, 2);
-      var l1 = formatConns(best, specificGrade);
-      return {cls:'cy', lines:[l1, req.qual+' not available']};
+      // connections on line0, grade on line1, warn on qual
+      var connStr = best.length ? formatConns(best) : '—';
+      return {cls:'cy', lines:[connStr, req.qual+' not available']};
     }
     m = qm;
   }
@@ -447,19 +458,20 @@ function evalComp(cid, req){
   var selected = smartSelect(m, 2);
   if(!selected.length) return {cls:'cn', lines:['—','No matching connection']};
 
-  var line1 = formatConns(selected, specificGrade);
+  var connLine = formatConns(selected);        // line 0: "Blue® / Wedge 523®"
+  var gradeLine = specificGrade || '';         // line 1: "TN 110HC"  (no slash)
 
   // Grade issue warning — yellow
   if(gradeIssue){
-    return {cls:'cy', lines:[line1, gradeIssue]};
+    return {cls:'cy', lines:[connLine, gradeIssue]};
   }
 
   // Drift check
   if(req.dr && parseFloat(req.dr) > 0){
-    return {cls:'cy', lines:[line1, 'Drift TBC']};
+    return {cls:'cy', lines:[connLine, 'Drift TBC']};
   }
 
-  return {cls:'cg', lines:[line1, '']};
+  return {cls:'cg', lines:[connLine, gradeLine]};
 }
 
 function smartSelect(conns, max){
@@ -488,10 +500,9 @@ function smartSelect(conns, max){
   return result;
 }
 
-function formatConns(conns, specificGrade){
-  // Group connection names together, show grade once at the end
-  var names = conns.map(function(c){ return c.name; }).join(', ');
-  return specificGrade ? names + ' / ' + specificGrade : names;
+function formatConns(conns){
+  // Connection names joined with ' / ' — grade is shown separately on line 2
+  return conns.map(function(c){ return c.name; }).join(' / ');
 }
 
 // ── GENERATE ──────────────────────────────────────────────────────────────
@@ -526,9 +537,11 @@ function generate(){
       var r = evalComp(c.id, req);
       rc.push(r);
       h += '<td class="' + r.cls + '">';
-      var lns = r.lines[0].split('\n');
-      h += lns.join('<br>');
-      if(r.lines[1]) h += '<span class="cn2">' + r.lines[1] + '</span>';
+      h += r.lines[0].replace(/\n/g,'<br>');
+      if(r.lines[1]){
+        var l2cls = (r.cls === 'cg') ? 'cn2 grade' : 'cn2';
+        h += '<span class="' + l2cls + '">' + r.lines[1] + '</span>';
+      }
       h += '</td>';
     });
     lastRes.cells.push(rc);
