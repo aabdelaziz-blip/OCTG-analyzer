@@ -91,7 +91,8 @@ tr:last-child td{border-bottom:none}
 .cy{background:#FFFF00;color:#000}
 .cr{background:#FF0000;color:#000}
 .cn{background:var(--navy3);color:var(--txt3);font-style:italic;font-weight:400}
-.cn2{font-weight:400;font-size:11px;display:block;margin-top:2px}
+.cn2{font-weight:600;font-size:12px;display:block;margin-top:2px;color:inherit;font-style:normal}
+.grade{font-weight:600;font-size:12px;color:inherit;font-style:normal}
 </style>
 </head>
 <body>
@@ -156,7 +157,7 @@ var DB={}, COMPS=[], SEL_ORDER=[], rowN=0, lastRes=null;
 
 var ODS=['1.9','2 3/8','2 7/8','3 1/2','4','4 1/2','5','5 1/2','6 5/8','7','7 5/8','7 3/4','8 5/8','9 5/8','10 3/4','11 3/4','13 3/8','14','16','18 5/8','20','24','26'];
 var ETS=['T&C','Integral Flush','Integral Semi-Flush','Integral Upset','Riser'];
-var QUALS=['CAL IV','CAL II','CAL I','ASL 350','N/A'];
+var QUALS=['CAL IV','CAL III','CAL II','CAL I','ASL 350','N/A'];
 var O2M={'1.9':48.26,'2 3/8':60.32,'2 7/8':73.03,'3 1/2':88.90,'4':101.60,'4 1/2':114.30,'5':127.00,'5 1/2':139.70,'6 5/8':168.28,'7':177.80,'7 5/8':193.68,'7 3/4':196.85,'8 5/8':219.08,'9 5/8':244.48,'10 3/4':273.05,'11 3/4':298.45,'13 3/8':339.72,'14':355.60,'16':406.40,'18 5/8':473.08,'20':508.00,'24':609.60,'26':660.00};
 
 // KSI groups — standard API + common proprietary grades per ksi
@@ -364,6 +365,83 @@ function delRow(id){
 }
 
 // ── EVALUATE ──────────────────────────────────────────────────────────────
+
+// ── GRADE MATCH HELPERS ───────────────────────────────────────────────────
+function normGrade(s){
+  return String(s || '')
+    .toUpperCase()
+    .replace(/®/g,'')
+    .replace(/[^A-Z0-9]+/g,'')
+    .replace(/SUP/g,'SUPER')
+    .replace(/CR13/g,'13CR');
+}
+function gradeTokens(s){
+  var n = normGrade(s);
+  var parts = String(s || '').toUpperCase().split(/[^A-Z0-9]+/).filter(Boolean).map(normGrade);
+  parts.push(n);
+  String(s || '').split('/').forEach(function(p){ if(p) parts.push(normGrade(p)); });
+  return Array.from(new Set(parts.filter(Boolean)));
+}
+function gradeMatch(candidate, target){
+  if(!candidate || !target) return false;
+  var c = normGrade(candidate), t = normGrade(target);
+  if(c === t) return true;
+  if(c.indexOf(t) >= 0 || t.indexOf(c) >= 0) return true;
+  var ct = gradeTokens(candidate), tt = gradeTokens(target);
+  for(var i=0;i<ct.length;i++){
+    for(var j=0;j<tt.length;j++){
+      if(ct[i] === tt[j]) return true;
+      if(ct[i].length >= 4 && tt[j].length >= 4 && (ct[i].indexOf(tt[j]) >= 0 || tt[j].indexOf(ct[i]) >= 0)) return true;
+    }
+  }
+  return false;
+}
+function connSupportsGrade(conn, gradeName){
+  if(!gradeName) return true;
+  var gs = conn.grades || [];
+  for(var i=0;i<gs.length;i++){
+    if(gradeMatch(gs[i], gradeName)) return true;
+  }
+  return false;
+}
+function competitorHasKsiGrade(cid, ksi){
+  if(!ksi) return true;
+  // Exact service/grade rows for this KSI.
+  for(var cat in GRADE_MATRIX){
+    var matrix = GRADE_MATRIX[cat];
+    var lookup = matrix[ksi];
+    if(lookup && lookup[cid]) return true;
+  }
+  // API grades live under 'any', so only allow them if they belong to the selected KSI group.
+  var ksiGrades = KSI_GROUPS[ksi] || [];
+  for(var i=0;i<ksiGrades.length;i++){
+    var g = ksiGrades[i];
+    if(API_GRADES.has(g)){
+      var m = GRADE_MATRIX[g];
+      if(m && m['any'] && m['any'][cid]) return true;
+    }
+  }
+  return false;
+}
+function firstKsiGradeForCompetitor(cid, ksi){
+  if(!ksi) return '';
+  // Prefer exact specialty rows over API rows.
+  for(var cat in GRADE_MATRIX){
+    var matrix = GRADE_MATRIX[cat];
+    var lookup = matrix[ksi];
+    if(lookup && lookup[cid]) return lookup[cid];
+  }
+  var ksiGrades = KSI_GROUPS[ksi] || [];
+  for(var i=0;i<ksiGrades.length;i++){
+    var g = ksiGrades[i];
+    if(API_GRADES.has(g)){
+      var m = GRADE_MATRIX[g];
+      if(m && m['any'] && m['any'][cid]) return m['any'][cid];
+    }
+  }
+  return '';
+}
+
 function evalComp(cid, req){
   var d = DB[cid];
   if(!d) return {cls:'cn', lines:['—','No data']};
@@ -425,20 +503,29 @@ function evalComp(cid, req){
       }
     }
   } else if(req.ksi){
-    // KSI only — no specific grade — just check KSI makes sense
+    // KSI only — competitor-specific check, not just global KSI_GROUPS.
     var ksiGrades = KSI_GROUPS[req.ksi] || [];
     if(ksiGrades.length === 0){
       return {cls:'cr', lines:['No '+req.ksi+' ksi grades','in database']};
     }
+    if(!competitorHasKsiGrade(cid, req.ksi)){
+      var bestKsi = smartSelect(m, 1);
+      return {cls:'cr', lines:[bestKsi.length?formatConns(bestKsi):'—', 'No confirmed '+req.ksi+' ksi grade']};
+    }
+    specificGrade = firstKsiGradeForCompetitor(cid, req.ksi) || '';
   }
 
-  // ── Filter connections by grade key ───────────────────────────────
-  // If we resolved a specificGrade, narrow connections to those whose
-  // .grades array contains that grade key. Fall back to all if none match.
+  // ── Filter connections by grade compatibility ─────────────────────
+  // Uses normalized/fuzzy grade matching so display grades in GRADE_MATRIX
+  // can still match internal grade keys in data.json where possible.
   if(specificGrade){
-    var gm = m.filter(function(c){ return c.grades && c.grades.indexOf(specificGrade) !== -1; });
-    if(gm.length) m = gm;
-    // If no connection has this grade key, keep all — grade still shown as warning
+    var gm = m.filter(function(c){ return connSupportsGrade(c, specificGrade); });
+    if(gm.length){
+      m = gm;
+    } else {
+      // Do not hard-fail: some competitors list connection grades as broad families.
+      // Keep connection candidates; grade availability is already proven by GRADE_MATRIX.
+    }
   }
 
   // ── Qualification filter ───────────────────────────────────────────
@@ -474,7 +561,7 @@ function evalComp(cid, req){
 }
 
 function smartSelect(conns, max){
-  var order = {'CAL IV':0,'CAL II':1,'CAL I':2,'ASL 350':3,'N/A':4};
+  var order = {'CAL IV':0,'CAL III':1,'CAL II':2,'CAL I':3,'ASL 350':4,'N/A':5};
   var sorted = conns.slice().sort(function(a,b){
     // Primary: CAL level (use explicit undefined check — 0 is falsy)
     var diff = (order[a.cal]!==undefined?order[a.cal]:9) - (order[b.cal]!==undefined?order[b.cal]:9);
