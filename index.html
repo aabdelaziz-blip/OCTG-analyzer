@@ -325,6 +325,7 @@ function addRow(){
     + '<div class="fld"><label>KSI</label><select class="fksi"><option value="">— any —</option>' + Object.keys(KSI_GROUPS).map(function(k){ return '<option value="' + k + '">' + k + ' ksi</option>'; }).join('') + '</select></div>'
     + '<div class="fld"><label>Grade</label><select class="fgr" disabled><option value="">— select KSI first —</option></select></div>'
     + '<div class="fld"><label>Qualification</label><select class="fqual"><option value="">— any —</option>' + QUALS.map(function(q){ return '<option>' + q + '</option>'; }).join('') + '</select></div>'
+    + '<div class="fld"><label>Class</label><select class="fcls"><option value="">— any —</option><option value="Premium">Premium</option><option value="Semi-Premium">Semi-Premium</option></select></div>'
     + '<div class="fld"><label>Min drift (in)</label><input type="number" class="fdr" placeholder="Optional" step="0.001"></div>'
     + '<button class="dbtn" onclick="delRow(\'r' + rowN + '\')" title="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button>';
   document.getElementById('rcon').appendChild(div);
@@ -453,6 +454,17 @@ function evalComp(cid, req){
     m = qm;
   }
 
+  // ── Class filter (Premium / Semi-Premium) ──────────────────────────
+  if(req.cls){
+    var clm = m.filter(function(c){ return c.cls===req.cls; });
+    if(!clm.length){
+      var best = smartSelect(m, 2);
+      var connStr2 = best.length ? formatConns(best) : '—';
+      return {cls:'cy', lines:[connStr2, 'No '+req.cls+' option']};
+    }
+    m = clm;
+  }
+
   // ── Smart select ───────────────────────────────────────────────────
   var selected = smartSelect(m, 2);
   if(!selected.length) return {cls:'cn', lines:['—','No matching connection']};
@@ -518,6 +530,7 @@ function generate(){
       ksi:  r.querySelector('.fksi').value,
       gr:   r.querySelector('.fgr').value,
       qual: r.querySelector('.fqual').value,
+      cls:  r.querySelector('.fcls').value,
       dr:   r.querySelector('.fdr').value
     });
   });
