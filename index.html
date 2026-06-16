@@ -181,75 +181,75 @@ var KSI_GROUPS = {
 //          Hunting: reseller / connection company → no proprietary steel grades
 var GRADE_MATRIX = {
   // ── API grades ──────────────────────────────────────────────────────────────
-  'J55':               { any:  { tpco:'J55',      hengyang:'J55',      baosteel:'J55',      changbao:'J55',    molong:'J55',    vallourec:'J55',      jfe:'J55',             nippon:'J55',          hunting:'J55',      voestalpine:'J55',      tenaris:'J55'      , interpipe:'J55'}},
-  'K55':               { any:  { tpco:'K55',      hengyang:'K55',      baosteel:'K55',      changbao:'K55',    molong:'K55',    vallourec:'K55',      jfe:'K55',             nippon:'K55',          hunting:'K55',      voestalpine:'K55',      tenaris:'K55'      , interpipe:'K55'}},
-  'N80':               { any:  { tpco:'N80',      hengyang:'N80',      baosteel:'N80',      changbao:'N80',    molong:'N80',    vallourec:'N80',      jfe:'N80',             nippon:'N80',          hunting:'N80',      voestalpine:'N80',      tenaris:'N80'      , interpipe:'N80'}},
-  'L80-1':             { any:  { tpco:'L80-1',    hengyang:'L80-1',    baosteel:'L80-1',    changbao:'L80-1',  molong:'L80-1',  vallourec:'L80-1',    jfe:'L80-1',           nippon:'L80-1',        hunting:'L80-1',    voestalpine:'L80-1',    tenaris:'L80-1'    , interpipe:'L80-1'}},
-  'L80-9Cr':           { any:  { tpco:'L80-9Cr',  hengyang:'L80-9Cr',  baosteel:'L80-9Cr',  changbao:null,     molong:null,     vallourec:'L80-9Cr',  jfe:'L80-9Cr',         nippon:'L80-9Cr',      hunting:null,  voestalpine:'L80-9Cr',  tenaris:'L80-9Cr'  , interpipe:'L80-9Cr'}},
-  'L80-13Cr':          { any:  { tpco:'L80-13Cr', hengyang:'L80-13Cr', baosteel:'L80-13Cr', changbao:'L80-13Cr', molong:'L80-13Cr', vallourec:'L80-13Cr', jfe:'L80-13Cr',    nippon:'L80-13Cr',     hunting:null, voestalpine:'L80-13Cr', tenaris:'L80-13Cr' , interpipe:'L80-13Cr'}},
-  'C90':               { any:  { tpco:'C90',      hengyang:'C90',      baosteel:'C90',      changbao:'C90',    molong:'C90',    vallourec:'C90',      jfe:'C90',             nippon:'C90',          hunting:'C90',      voestalpine:'C90',      tenaris:'C90'      , interpipe:'C90'}},
-  'T95':               { any:  { tpco:'T95',      hengyang:'T95',      baosteel:'T95',      changbao:'T95',    molong:'T95',    vallourec:'T95',      jfe:'T95',             nippon:'T95',          hunting:'T95',      voestalpine:'T95',      tenaris:'T95'      , interpipe:'T95'}},
-  'C95':               { any:  { tpco:'C95',      hengyang:'C95',      baosteel:'C95',      changbao:'C95',    molong:'C95',    vallourec:'C95',      jfe:'C95',             nippon:'C95',          hunting:'C95',      voestalpine:'C95',      tenaris:'C95'      , interpipe:'C95'}},
-  'P110':              { any:  { tpco:'P110',     hengyang:'P110',     baosteel:'P110',     changbao:'P110',   molong:'P110',   vallourec:'P110',     jfe:'P110',            nippon:'P110',         hunting:'P110',     voestalpine:'P110',     tenaris:'P110'     , interpipe:'P110'}},
-  'Q125':              { any:  { tpco:'Q125',     hengyang:'Q125',     baosteel:'Q125',     changbao:'Q125',   molong:'Q125',   vallourec:'Q125',     jfe:'Q125',            nippon:'Q125',         hunting:'Q125',     voestalpine:'Q125',     tenaris:'Q125'     , interpipe:'Q125'}},
+  'J55':               { any:  { tpco:'J55',      hengyang:'J55',      baosteel:'J55',      changbao:'J55',    molong:'J55',    vallourec:'J55',      jfe:'J55',             nippon:'J55',          hunting:'J55',      voestalpine:'J55',      tenaris:'J55'      , interpipe:'J55', dalipal:null}},
+  'K55':               { any:  { tpco:'K55',      hengyang:'K55',      baosteel:'K55',      changbao:'K55',    molong:'K55',    vallourec:'K55',      jfe:'K55',             nippon:'K55',          hunting:'K55',      voestalpine:'K55',      tenaris:'K55'      , interpipe:'K55', dalipal:null}},
+  'N80':               { any:  { tpco:'N80',      hengyang:'N80',      baosteel:'N80',      changbao:'N80',    molong:'N80',    vallourec:'N80',      jfe:'N80',             nippon:'N80',          hunting:'N80',      voestalpine:'N80',      tenaris:'N80'      , interpipe:'N80', dalipal:null}},
+  'L80-1':             { any:  { tpco:'L80-1',    hengyang:'L80-1',    baosteel:'L80-1',    changbao:'L80-1',  molong:'L80-1',  vallourec:'L80-1',    jfe:'L80-1',           nippon:'L80-1',        hunting:'L80-1',    voestalpine:'L80-1',    tenaris:'L80-1'    , interpipe:'L80-1', dalipal:null}},
+  'L80-9Cr':           { any:  { tpco:'L80-9Cr',  hengyang:'L80-9Cr',  baosteel:'L80-9Cr',  changbao:null,     molong:null,     vallourec:'L80-9Cr',  jfe:'L80-9Cr',         nippon:'L80-9Cr',      hunting:null,  voestalpine:'L80-9Cr',  tenaris:'L80-9Cr'  , interpipe:'L80-9Cr', dalipal:null}},
+  'L80-13Cr':          { any:  { tpco:'L80-13Cr', hengyang:'L80-13Cr', baosteel:'L80-13Cr', changbao:'L80-13Cr', molong:'L80-13Cr', vallourec:'L80-13Cr', jfe:'L80-13Cr',    nippon:'L80-13Cr',     hunting:null, voestalpine:'L80-13Cr', tenaris:'L80-13Cr' , interpipe:'L80-13Cr', dalipal:null}},
+  'C90':               { any:  { tpco:'C90',      hengyang:'C90',      baosteel:'C90',      changbao:'C90',    molong:'C90',    vallourec:'C90',      jfe:'C90',             nippon:'C90',          hunting:'C90',      voestalpine:'C90',      tenaris:'C90'      , interpipe:'C90', dalipal:null}},
+  'T95':               { any:  { tpco:'T95',      hengyang:'T95',      baosteel:'T95',      changbao:'T95',    molong:'T95',    vallourec:'T95',      jfe:'T95',             nippon:'T95',          hunting:'T95',      voestalpine:'T95',      tenaris:'T95'      , interpipe:'T95', dalipal:null}},
+  'C95':               { any:  { tpco:'C95',      hengyang:'C95',      baosteel:'C95',      changbao:'C95',    molong:'C95',    vallourec:'C95',      jfe:'C95',             nippon:'C95',          hunting:'C95',      voestalpine:'C95',      tenaris:'C95'      , interpipe:'C95', dalipal:null}},
+  'P110':              { any:  { tpco:'P110',     hengyang:'P110',     baosteel:'P110',     changbao:'P110',   molong:'P110',   vallourec:'P110',     jfe:'P110',            nippon:'P110',         hunting:'P110',     voestalpine:'P110',     tenaris:'P110'     , interpipe:'P110', dalipal:null}},
+  'Q125':              { any:  { tpco:'Q125',     hengyang:'Q125',     baosteel:'Q125',     changbao:'Q125',   molong:'Q125',   vallourec:'Q125',     jfe:'Q125',            nippon:'Q125',         hunting:'Q125',     voestalpine:'Q125',     tenaris:'Q125'     , interpipe:'Q125', dalipal:null}},
   // ── High Collapse ───────────────────────────────────────────────────────────
   'High Collapse':     {
-    '80':  { tpco:'TP80TT',   hengyang:'HS80TT',   baosteel:null,  changbao:'CB80TT',   molong:null,   vallourec:'VM80HC',   jfe:null,              nippon:'SM-80T',       hunting:'L80HC / N80HC',  voestalpine:'VA-HC-N80-Q', tenaris:'TN-80HC'  , interpipe:null},
-    '95':  { tpco:'TP95TT',   hengyang:'HS95TT',   baosteel:null,  changbao:'CB95TT',   molong:null,   vallourec:'VM95HC',   jfe:'T95-HC/HCX',      nippon:'SM-95T/TT',    hunting:null,  voestalpine:'VA-HC-T95',   tenaris:'TN-95HC'  , interpipe:null},
-    '110': { tpco:'TP110TT',  hengyang:'HS110TT',  baosteel:null,  changbao:'CB110TT',  molong:null,  vallourec:'VM110HC',  jfe:'C110-HC/HCX',     nippon:'SM-110T/TT',   hunting:'P110HC',  voestalpine:'VA-HC-C110',  tenaris:'TN-110HC' , interpipe:null},
-    '125': { tpco:'TP125TT',  hengyang:'HS125TT',  baosteel:null,  changbao:null,       molong:null,  vallourec:'VM125HC',  jfe:'Q125-HC/HCX',     nippon:'SM-125TT',     hunting:'Q125HC',  voestalpine:'VA-HC-Q125',  tenaris:'TN-125HC' , interpipe:null},
-    '140': { tpco:'TP140TT',  hengyang:'HS140TT',  baosteel:null,  changbao:null,       molong:null,       vallourec:'VM140HC',  jfe:null,              nippon:null,           hunting:null,  voestalpine:'VA-D-140-HC', tenaris:'TN-140HC' , interpipe:null},
+    '80':  { tpco:'TP80TT',   hengyang:'HS80TT',   baosteel:null,  changbao:'CB80TT',   molong:null,   vallourec:'VM80HC',   jfe:null,              nippon:'SM-80T',       hunting:'L80HC / N80HC',  voestalpine:'VA-HC-N80-Q', tenaris:'TN-80HC'  , interpipe:null, dalipal:'DLP80TT'},
+    '95':  { tpco:'TP95TT',   hengyang:'HS95TT',   baosteel:null,  changbao:'CB95TT',   molong:null,   vallourec:'VM95HC',   jfe:'T95-HC/HCX',      nippon:'SM-95T/TT',    hunting:null,  voestalpine:'VA-HC-T95',   tenaris:'TN-95HC'  , interpipe:null, dalipal:'DLP95TT'},
+    '110': { tpco:'TP110TT',  hengyang:'HS110TT',  baosteel:null,  changbao:'CB110TT',  molong:null,  vallourec:'VM110HC',  jfe:'C110-HC/HCX',     nippon:'SM-110T/TT',   hunting:'P110HC',  voestalpine:'VA-HC-C110',  tenaris:'TN-110HC' , interpipe:null, dalipal:'DLP110TT'},
+    '125': { tpco:'TP125TT',  hengyang:'HS125TT',  baosteel:null,  changbao:null,       molong:null,  vallourec:'VM125HC',  jfe:'Q125-HC/HCX',     nippon:'SM-125TT',     hunting:'Q125HC',  voestalpine:'VA-HC-Q125',  tenaris:'TN-125HC' , interpipe:null, dalipal:'DLP125TT'},
+    '140': { tpco:'TP140TT',  hengyang:'HS140TT',  baosteel:null,  changbao:null,       molong:null,       vallourec:'VM140HC',  jfe:null,              nippon:null,           hunting:null,  voestalpine:'VA-D-140-HC', tenaris:'TN-140HC' , interpipe:null, dalipal:'DLP140TT'},
   },
   // ── Sour Service ────────────────────────────────────────────────────────────
   'Sour Service':      {
-    '80':  { tpco:'TP80SS',  hengyang:'HS80SS',  baosteel:null,  changbao:'CB80SS',  molong:null,  vallourec:'VM80SS',  jfe:'JFE-80S/SS',   nippon:'SM-80XS',   hunting:null,  voestalpine:'VA-SS-80',  tenaris:'TN-80SS'  , interpipe:null},
-    '90':  { tpco:'TP90SS',  hengyang:'HS90SS',  baosteel:null,  changbao:'CB90SS',  molong:null,  vallourec:'VM90SS',  jfe:'JFE-90S/SS',   nippon:'SM-90XS',   hunting:null,  voestalpine:'VA-SS-90',  tenaris:'TN-90SS'  , interpipe:null},
-    '95':  { tpco:'TP95SS',  hengyang:'HS95SS',  baosteel:null,  changbao:'CB95SS',  molong:null,  vallourec:'VM95SS',  jfe:'JFE-95S/SS',   nippon:'SM-95XS',   hunting:null,  voestalpine:'VA-SS-95',  tenaris:'TN-95SS'  , interpipe:null},
-    '110': { tpco:'TP110SS', hengyang:'HS110SS', baosteel:null,  changbao:'CB110SS', molong:'ML110SS', vallourec:'VM110SS', jfe:'JFE-110S/SS',  nippon:'SM-110XS',  hunting:null,  voestalpine:'VA-SS-110', tenaris:'TN-110SS' , interpipe:null},
-    '125': { tpco:'TP125S', hengyang:'HS125SS', baosteel:null,  changbao:null,      molong:null,      vallourec:'VM125SS', jfe:'JFE-125S',     nippon:'SM-125ES',  hunting:null,  voestalpine:'VA-S-125',  tenaris:'TN-125SS' , interpipe:null},
+    '80':  { tpco:'TP80SS',  hengyang:'HS80SS',  baosteel:null,  changbao:'CB80SS',  molong:null,  vallourec:'VM80SS',  jfe:'JFE-80S/SS',   nippon:'SM-80XS',   hunting:null,  voestalpine:'VA-SS-80',  tenaris:'TN-80SS'  , interpipe:null, dalipal:'DLP80S'},
+    '90':  { tpco:'TP90SS',  hengyang:'HS90SS',  baosteel:null,  changbao:'CB90SS',  molong:null,  vallourec:'VM90SS',  jfe:'JFE-90S/SS',   nippon:'SM-90XS',   hunting:null,  voestalpine:'VA-SS-90',  tenaris:'TN-90SS'  , interpipe:null, dalipal:'DLP90S'},
+    '95':  { tpco:'TP95SS',  hengyang:'HS95SS',  baosteel:null,  changbao:'CB95SS',  molong:null,  vallourec:'VM95SS',  jfe:'JFE-95S/SS',   nippon:'SM-95XS',   hunting:null,  voestalpine:'VA-SS-95',  tenaris:'TN-95SS'  , interpipe:null, dalipal:'DLP95S'},
+    '110': { tpco:'TP110SS', hengyang:'HS110SS', baosteel:null,  changbao:'CB110SS', molong:'ML110SS', vallourec:'VM110SS', jfe:'JFE-110S/SS',  nippon:'SM-110XS',  hunting:null,  voestalpine:'VA-SS-110', tenaris:'TN-110SS' , interpipe:null, dalipal:'DLP110S'},
+    '125': { tpco:'TP125S', hengyang:'HS125SS', baosteel:null,  changbao:null,      molong:null,      vallourec:'VM125SS', jfe:'JFE-125S',     nippon:'SM-125ES',  hunting:null,  voestalpine:'VA-S-125',  tenaris:'TN-125SS' , interpipe:null, dalipal:'DLP125S'},
   },
   // ── HC + Sour Service ───────────────────────────────────────────────────────
   'HC + Sour Service': {
-    '80':  { tpco:'TP80TS',   hengyang:'HS80TS',  baosteel:null,  changbao:'CB80TS',  molong:null,  vallourec:'VM80HCSS',  jfe:null,              nippon:'SM-80TXS',   hunting:null,  voestalpine:'VA-SS-80-HC',  tenaris:null , interpipe:null},
-    '90':  { tpco:'TP90TS',   hengyang:'HS90TS',  baosteel:null,  changbao:'CB90TS',  molong:null,  vallourec:'VM90HCSS',  jfe:null,              nippon:'SM-90TXS',   hunting:null,  voestalpine:'VA-SS-90-HC',  tenaris:null , interpipe:null},
-    '95':  { tpco:'TP95TS',   hengyang:'HS95TS',  baosteel:null,  changbao:'CB95TS',  molong:null,  vallourec:'VM95HCSS',  jfe:'T95-HC/HCX',      nippon:'SM-95TXS',   hunting:null,  voestalpine:'VA-SS-95-HC',  tenaris:null , interpipe:null},
-    '110': { tpco:'TP110TS',  hengyang:'HS110TS', baosteel:null,  changbao:'CB110TS', molong:'ML110TSS', vallourec:'VM110HCSS', jfe:'C110-XSHC/XSHCX', nippon:'SM-110TXS',  hunting:null,  voestalpine:'VA-SS-110-HC', tenaris:null , interpipe:null},
-    '125': { tpco:null, hengyang:null,      baosteel:null,  changbao:null,      molong:null,       vallourec:'VM125HCSS', jfe:null,              nippon:'SM-125TES',  hunting:null,  voestalpine:'VA-S-125-HC',  tenaris:null , interpipe:null},
+    '80':  { tpco:'TP80TS',   hengyang:'HS80TS',  baosteel:null,  changbao:'CB80TS',  molong:null,  vallourec:'VM80HCSS',  jfe:null,              nippon:'SM-80TXS',   hunting:null,  voestalpine:'VA-SS-80-HC',  tenaris:null , interpipe:null, dalipal:'DLP80TS'},
+    '90':  { tpco:'TP90TS',   hengyang:'HS90TS',  baosteel:null,  changbao:'CB90TS',  molong:null,  vallourec:'VM90HCSS',  jfe:null,              nippon:'SM-90TXS',   hunting:null,  voestalpine:'VA-SS-90-HC',  tenaris:null , interpipe:null, dalipal:null},
+    '95':  { tpco:'TP95TS',   hengyang:'HS95TS',  baosteel:null,  changbao:'CB95TS',  molong:null,  vallourec:'VM95HCSS',  jfe:'T95-HC/HCX',      nippon:'SM-95TXS',   hunting:null,  voestalpine:'VA-SS-95-HC',  tenaris:null , interpipe:null, dalipal:'DLP95TS'},
+    '110': { tpco:'TP110TS',  hengyang:'HS110TS', baosteel:null,  changbao:'CB110TS', molong:'ML110TSS', vallourec:'VM110HCSS', jfe:'C110-XSHC/XSHCX', nippon:'SM-110TXS',  hunting:null,  voestalpine:'VA-SS-110-HC', tenaris:null , interpipe:null, dalipal:'DLP110TS'},
+    '125': { tpco:null, hengyang:null,      baosteel:null,  changbao:null,      molong:null,       vallourec:'VM125HCSS', jfe:null,              nippon:'SM-125TES',  hunting:null,  voestalpine:'VA-S-125-HC',  tenaris:null , interpipe:null, dalipal:null},
   },
   // ── High Strength / Deep Well ────────────────────────────────────────────────
   'High Strength':     {
-    '125': { tpco:'TP125V',  hengyang:null,    baosteel:null,  changbao:null,  molong:null,  vallourec:'VM125CY',  jfe:null,  nippon:null,        hunting:null,  voestalpine:'VA-D-125',  tenaris:'TN-135DW' , interpipe:null},
-    '140': { tpco:'TP140V',  hengyang:'HS140', baosteel:null,  changbao:null,  molong:null,  vallourec:'VM140CY',  jfe:null,  nippon:'SM-140MS',  hunting:null,  voestalpine:'VA-D-140',  tenaris:'TN-140DW' , interpipe:null},
-    '150': { tpco:'TP150V',  hengyang:'HS150', baosteel:null,  changbao:null,  molong:'ML150V',  vallourec:'VM150CY',  jfe:null,  nippon:null,        hunting:null,  voestalpine:'VA-D-150',  tenaris:'TN-150DW' , interpipe:null},
+    '125': { tpco:'TP125V',  hengyang:null,    baosteel:null,  changbao:null,  molong:null,  vallourec:'VM125CY',  jfe:null,  nippon:null,        hunting:null,  voestalpine:'VA-D-125',  tenaris:'TN-135DW' , interpipe:null, dalipal:'DLP125V'},
+    '140': { tpco:'TP140V',  hengyang:'HS140', baosteel:null,  changbao:null,  molong:null,  vallourec:'VM140CY',  jfe:null,  nippon:'SM-140MS',  hunting:null,  voestalpine:'VA-D-140',  tenaris:'TN-140DW' , interpipe:null, dalipal:'DLP140V'},
+    '150': { tpco:'TP150V',  hengyang:'HS150', baosteel:null,  changbao:null,  molong:'ML150V',  vallourec:'VM150CY',  jfe:null,  nippon:null,        hunting:null,  voestalpine:'VA-D-150',  tenaris:'TN-150DW' , interpipe:null, dalipal:'DLP150V'},
   },
   // ── 13Cr ────────────────────────────────────────────────────────────────────
   '13Cr':              {
-    '80':  { tpco:'TP80-13Cr',  hengyang:'HS80-13Cr', baosteel:null,  changbao:null,        molong:null, vallourec:'VM80-13CR',  jfe:'JFE-13CR-80',  nippon:'SM13CR-80',  hunting:null,  voestalpine:null,         tenaris:'TN-80Cr13'  , interpipe:null},
-    '95':  { tpco:'TP95-13Cr',  hengyang:null,         baosteel:null,  changbao:'CB95-13Cr', molong:null,        vallourec:'VM95-13CR',  jfe:'JFE-13CR-95',  nippon:null,         hunting:null,  voestalpine:'VA-95-13CR', tenaris:'TN-95Cr13'  , interpipe:null},
-    '110': { tpco:'TP110-13Cr', hengyang:null,         baosteel:null,  changbao:'CB110-13Cr',molong:null,        vallourec:null,          jfe:null,           nippon:null,         hunting:null,  voestalpine:'VA-110-13CR',tenaris:'TN-110Cr13M', interpipe:null},
+    '80':  { tpco:'TP80-13Cr',  hengyang:'HS80-13Cr', baosteel:null,  changbao:null,        molong:null, vallourec:'VM80-13CR',  jfe:'JFE-13CR-80',  nippon:'SM13CR-80',  hunting:null,  voestalpine:null,         tenaris:'TN-80Cr13'  , interpipe:null, dalipal:'DLP80-13Cr'},
+    '95':  { tpco:'TP95-13Cr',  hengyang:null,         baosteel:null,  changbao:'CB95-13Cr', molong:null,        vallourec:'VM95-13CR',  jfe:'JFE-13CR-95',  nippon:null,         hunting:null,  voestalpine:'VA-95-13CR', tenaris:'TN-95Cr13'  , interpipe:null, dalipal:null},
+    '110': { tpco:'TP110-13Cr', hengyang:null,         baosteel:null,  changbao:'CB110-13Cr',molong:null,        vallourec:null,          jfe:null,           nippon:null,         hunting:null,  voestalpine:'VA-110-13CR',tenaris:'TN-110Cr13M', interpipe:null, dalipal:'DLP110-13Cr'},
   },
   // ── Super 13Cr ──────────────────────────────────────────────────────────────
   'Super 13Cr':        {
-    '95':  { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM95-13CRSS',  jfe:'JFE-HP1-13CR-95',  nippon:'SM13CRM-95',  hunting:null,  voestalpine:null,  tenaris:'TN-95Cr13S'  , interpipe:null},
-    '110': { tpco:'TP110-SUP13Cr', hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM110-13CRSS', jfe:'JFE-HP1-13CR-110', nippon:'SM13CRM-110', hunting:null,  voestalpine:null,  tenaris:'TN-110Cr13S' , interpipe:null},
-    '125': { tpco:null,            hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM125-13CRSS', jfe:null,               nippon:null,          hunting:null,  voestalpine:null,  tenaris:'TN-125Cr13S' , interpipe:null},
+    '95':  { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM95-13CRSS',  jfe:'JFE-HP1-13CR-95',  nippon:'SM13CRM-95',  hunting:null,  voestalpine:null,  tenaris:'TN-95Cr13S'  , interpipe:null, dalipal:null},
+    '110': { tpco:'TP110-SUP13Cr', hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM110-13CRSS', jfe:'JFE-HP1-13CR-110', nippon:'SM13CRM-110', hunting:null,  voestalpine:null,  tenaris:'TN-110Cr13S' , interpipe:null, dalipal:null},
+    '125': { tpco:null,            hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM125-13CRSS', jfe:null,               nippon:null,          hunting:null,  voestalpine:null,  tenaris:'TN-125Cr13S' , interpipe:null, dalipal:null},
   },
   // ── HP 13Cr ─────────────────────────────────────────────────────────────────
   'HP 13Cr':           {
-    '95':  { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-HP2-13CR-95M',  nippon:'SM13CRS-95',  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null},
-    '110': { tpco:'TP110-HP13Cr', hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-HP2-13CR-110M', nippon:'SM13CRS-110', hunting:null,  voestalpine:null,  tenaris:null , interpipe:null},
+    '95':  { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-HP2-13CR-95M',  nippon:'SM13CRS-95',  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null, dalipal:null},
+    '110': { tpco:'TP110-HP13Cr', hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-HP2-13CR-110M', nippon:'SM13CRS-110', hunting:null,  voestalpine:null,  tenaris:null , interpipe:null, dalipal:null},
   },
   // ── 15Cr / 17Cr ─────────────────────────────────────────────────────────────
   '15Cr':              {
-    '125': { tpco:'TP125-SUP15Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-UHP-15CR-125',  nippon:null,  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null},
+    '125': { tpco:'TP125-SUP15Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-UHP-15CR-125',  nippon:null,  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null, dalipal:null},
   },
   '17Cr':              {
-    '110': { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-UHP-17CR-110',  nippon:null,  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null},
+    '110': { tpco:null,  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:null,  jfe:'JFE-UHP-17CR-110',  nippon:null,  hunting:null,  voestalpine:null,  tenaris:null , interpipe:null, dalipal:null},
   },
   // ── CRA ─────────────────────────────────────────────────────────────────────
-  '22Cr Duplex':       { any:  { tpco:'TP110-22Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM22Cr',  jfe:null,  nippon:'SM22CR-110/125',  hunting:null,  voestalpine:null,  tenaris:'TN-22Cr'  , interpipe:null}},
-  '25Cr Super Duplex': { any:  { tpco:'TP110-25Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM25S',   jfe:null,  nippon:'SM25CR-110/125',  hunting:null,  voestalpine:null,  tenaris:'TN-25Cr'  , interpipe:null}},
-  'Nickel Alloy':      { any:  { tpco:'TP-TDJ2535', hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:'VM825', jfe:null, nippon:'SM2535/SM2550', hunting:null, voestalpine:null, tenaris:'TN-Alloy825/TN-G3' , interpipe:null}},
+  '22Cr Duplex':       { any:  { tpco:'TP110-22Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM22Cr',  jfe:null,  nippon:'SM22CR-110/125',  hunting:null,  voestalpine:null,  tenaris:'TN-22Cr'  , interpipe:null, dalipal:null}},
+  '25Cr Super Duplex': { any:  { tpco:'TP110-25Cr',  hengyang:null,  baosteel:null,  changbao:null,  molong:null,  vallourec:'VM25S',   jfe:null,  nippon:'SM25CR-110/125',  hunting:null,  voestalpine:null,  tenaris:'TN-25Cr'  , interpipe:null, dalipal:null}},
+  'Nickel Alloy':      { any:  { tpco:'TP-TDJ2535', hengyang:null, baosteel:null, changbao:null, molong:null, vallourec:'VM825', jfe:null, nippon:'SM2535/SM2550', hunting:null, voestalpine:null, tenaris:'TN-Alloy825/TN-G3' , interpipe:null, dalipal:null}},
 }
 
 // Generic grade group → per-competitor specific grade names
